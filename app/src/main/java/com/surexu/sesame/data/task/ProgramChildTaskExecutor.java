@@ -25,37 +25,30 @@ public class ProgramChildTaskExecutor implements ChildTaskExecutor {
                     return;
                 }
                 //String modelTaskId = getName();
-                //Log.i("任务模块:" + modelTaskId + " 添加子任务:" + id);
                 try {
                     long delay = childTask.getExecTime() - System.currentTimeMillis();
                     if (delay > 0) {
                         try {
                             Thread.sleep(delay);
                         } catch (Exception e) {
-                            //Log.record("任务模块:" + modelTaskId + " 中断子任务:" + id);
                             return;
                         }
                     }
                     childTask.run();
                 } catch (Exception e) {
                     Log.printStackTrace(e);
-                    //Log.record("任务模块:" + modelTaskId + " 异常子任务:" + id);
                 } finally {
                     childTask.getModelTask().removeChildTask(childTask.getId());
-                    //Log.i("任务模块:" + modelTaskId + " 移除子任务:" + id);
                 }
             });
         } else {
             future = threadPoolExecutor.submit(() -> {
-                //Log.i("任务模块:" + modelTaskId + " 添加子任务:" + id);
                 try {
                     childTask.run();
                 } catch (Exception e) {
                     Log.printStackTrace(e);
-                    //Log.record("任务模块:" + getName() + " 异常子任务:" + childTask.getId());
                 } finally {
                     childTask.getModelTask().removeChildTask(childTask.getId());
-                    //Log.i("任务模块:" + modelTaskId + " 移除子任务:" + id);
                 }
             });
         }

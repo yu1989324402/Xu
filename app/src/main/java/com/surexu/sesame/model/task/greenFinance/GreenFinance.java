@@ -116,7 +116,6 @@ public class GreenFinance extends ModelTask {
         //捐助
         donation();
         //评级奖品（CP14664674 已结束，暂时注释）
-        // prizes();
         //绿色经营
         GreenFinanceRpcCall.doTask("AP13159535", TAG, "绿色经营📊");
         TimeUtil.sleep(500);
@@ -236,7 +235,6 @@ public class GreenFinance extends ModelTask {
                     break;
                 }
                 Log.other("绿色经营📊[" + jsonObject.getString("title") + "]打卡成功");
-//                Thread.sleep(executeIntervalInt);
             }
         } catch (Throwable th) {
             Log.err(TAG, "doTick err:", th);

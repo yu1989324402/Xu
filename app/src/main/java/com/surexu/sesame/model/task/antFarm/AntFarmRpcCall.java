@@ -136,7 +136,6 @@ public class AntFarmRpcCall {
         return ApplicationHook.requestString("com.alipay.antfarm.doFarmTask", args1);
     }
 
-    //String.valueOf(System.currentTimeMillis()) + RandomUtil.nextLong();
     //String outBizNo = taskType + "_" + RandomUtil.nextDouble();
     //{"bizKey":"IP_EXCHANGE_TASK","requestType":"RPC","sceneCode":"ANTFARM","source":"antfarm_villa","taskSceneCode":"ANTFARM_IP_DRAW_TASK"}
 

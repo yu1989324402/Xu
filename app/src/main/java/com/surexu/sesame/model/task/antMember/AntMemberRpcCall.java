@@ -11,6 +11,7 @@ import java.util.UUID;
 import com.surexu.sesame.model.base.TaskAlternative;
 import com.surexu.sesame.util.Log;
 import com.surexu.sesame.util.RandomUtil;
+import com.surexu.sesame.util.StringUtil;
 
 public class AntMemberRpcCall {
 
@@ -776,7 +777,7 @@ public class AntMemberRpcCall {
      * 芝麻信用领取任务
      */
     public static String joinSesameTask(String taskTemplateId) {
-        return ApplicationHook.requestString("com.antgroup.zmxy.zmmemberop.biz.rpc.promise.PromiseRpcManager.joinActivity", "[{\"chInfo\":\"seasameList\",\"joinFromOuter\":false,\"templateId\":\"" + taskTemplateId + "\"}]");
+        return ApplicationHook.requestString("com.antgroup.zmxy.zmmemberop.biz.rpc.promise.PromiseRpcManager.joinActivity", "[{\"chInfo\":\"seasameList\",\"joinFromOuter\":false,\"sceneCode\":\"zml\",\"templateId\":\"" + taskTemplateId + "\"}]");
     }
 
     /**
@@ -787,10 +788,13 @@ public class AntMemberRpcCall {
     }
 
     /**
-     * 芝麻信用完成任务
+     * 芝麻信用 pushActivity：须带 recordId 推完记录；extCheck 通常传空。
      */
-    public static String finishSesameTask(String recordId) {
-        return ApplicationHook.requestString("com.antgroup.zmxy.zmmemberop.biz.rpc.promise.PromiseRpcManager.pushActivity", "[{\"recordId\":\"" + recordId + "\"}]");
+    public static String finishSesameTask(String recordId, String extCheck) {
+        String body = StringUtil.isEmpty(extCheck)
+                ? "[{\"recordId\":\"" + recordId + "\"}]"
+                : "[{\"promiseActivityExtCheck\":\"" + extCheck + "\",\"recordId\":\"" + recordId + "\"}]";
+        return ApplicationHook.requestString("com.antgroup.zmxy.zmmemberop.biz.rpc.promise.PromiseRpcManager.pushActivity", body);
     }
 
     /**
@@ -838,19 +842,20 @@ public class AntMemberRpcCall {
     }
 
     /**
-     * 芝麻信用领取任务
+     * 芝麻信用任务反馈：受理，不等于完成；报文 bizType 固定为 LIFE_RECORD。
      */
-    public static String joinSesameTaskNew(String taskTemplateId) {
-        String requestData = "[{\"chInfo\":\"seasameList\",\"joinFromOuter\":false,\"sceneCode\":\"zml\",\"templateId\":\"" + taskTemplateId + "\"}]";
-        return ApplicationHook.requestString("com.antgroup.zmxy.zmmemberop.biz.rpc.promise.PromiseRpcManager.joinActivity", requestData);
+    public static String feedBackSesameTaskNew(String taskTemplateId) {
+        String requestData = "[{\"actionType\":\"TO_COMPLETE\",\"bizType\":\"LIFE_RECORD\""
+                + ",\"sceneCode\":\"zml\",\"templateId\":\"" + taskTemplateId + "\",\"version\":\"new\"}]";
+        return ApplicationHook.requestString("com.antgroup.zmxy.zmmemberop.biz.rpc.creditaccumulate.CreditAccumulateStrategyRpcManager.taskFeedback", requestData);
     }
 
     /**
-     * 芝麻信用获取任务回调
+     * 查询「最近一次操作任务」：join 被 {@code PROMISE_HAS_PROCESSING_TEMPLATE}（存在进行中的生活记录）拒绝时，
+     * 用它取回那条记录的 {@code recordId} 继续推完。
      */
-    public static String feedBackSesameTaskNew(String taskTemplateId) {
-        String requestData = "[{\"actionType\":\"TO_COMPLETE\",\"bizType\":\"LIFE_RECORD\",\"sceneCode\":\"zml\",\"templateId\":\"" + taskTemplateId + "\",\"version\":\"new\"}]";
-        return ApplicationHook.requestString("com.antgroup.zmxy.zmmemberop.biz.rpc.creditaccumulate.CreditAccumulateStrategyRpcManager.taskFeedback", requestData);
+    public static String queryLastOperateTask() {
+        return ApplicationHook.requestString("com.antgroup.zmxy.zmmemberop.biz.rpc.creditaccumulate.CreditAccumulateStrategyRpcManager.queryLastOperateTask", "[{\"version\":\"new\"}]");
     }
 
     /**

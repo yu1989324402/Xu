@@ -17,6 +17,8 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import android.text.Editable
 import android.text.TextWatcher
@@ -50,7 +52,6 @@ import com.surexu.sesame.util.FileUtil
 import com.surexu.sesame.util.LanguageUtil
 import com.surexu.sesame.util.Statistics
 import com.surexu.sesame.util.StringUtil
-import com.surexu.sesame.util.idMap.UserIdMap
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -228,8 +229,6 @@ class NeoMainActivity : AppCompatActivity() {
             sendRunTypeQueryBroadcast()
             runTypeProbeHandler.postDelayed(runTypeProbeRunnable, RUN_TYPE_PROBE_INTERVAL_MS)
         }
-        // 从账号配置页返回后刷新右上角账号按钮（设置页尚未懒加载时跳过，避免空指针）
-        if (pageInited[3]) refreshSettingsAccountButton()
         // 系统界面设置可能已变更：即时应用悬浮底栏并刷新设置页副标题
         applyFloatNav()
         updateSystemSettingSub()
@@ -270,7 +269,7 @@ class NeoMainActivity : AppCompatActivity() {
 
     /** 切换页面与底部导航选中态。 */
     private fun switchPage(index: Int) {
-        val activeColor = ContextCompat.getColor(this, R.color.neo_primary)
+        val activeColor = ContextCompat.getColor(this, R.color.neo_blue)
         val idleColor = ContextCompat.getColor(this, R.color.neo_text_hint)
 
         ensurePageLoaded(index)
@@ -309,7 +308,6 @@ class NeoMainActivity : AppCompatActivity() {
             2 -> bindLogsActions()
             3 -> {
                 bindSettingsActions()
-                refreshSettingsAccountButton()
             }
         }
     }
@@ -411,18 +409,22 @@ class NeoMainActivity : AppCompatActivity() {
         fun fill(id: Int, tt: Statistics.TimeType, dt: Statistics.DataType) {
             findViewById<TextView>(id).text = String.format("%,d", Statistics.getData(tt, dt))
         }
-        fill(R.id.neo_home_energy_total_collect, Statistics.TimeType.ALL, Statistics.DataType.COLLECTED)
-        fill(R.id.neo_home_energy_total_help, Statistics.TimeType.ALL, Statistics.DataType.HELPED)
-        fill(R.id.neo_home_energy_total_water, Statistics.TimeType.ALL, Statistics.DataType.WATERED)
-        fill(R.id.neo_home_energy_year_collect, Statistics.TimeType.YEAR, Statistics.DataType.COLLECTED)
-        fill(R.id.neo_home_energy_year_help, Statistics.TimeType.YEAR, Statistics.DataType.HELPED)
-        fill(R.id.neo_home_energy_year_water, Statistics.TimeType.YEAR, Statistics.DataType.WATERED)
-        fill(R.id.neo_home_energy_month_collect, Statistics.TimeType.MONTH, Statistics.DataType.COLLECTED)
-        fill(R.id.neo_home_energy_month_help, Statistics.TimeType.MONTH, Statistics.DataType.HELPED)
-        fill(R.id.neo_home_energy_month_water, Statistics.TimeType.MONTH, Statistics.DataType.WATERED)
-        fill(R.id.neo_home_energy_today_collect, Statistics.TimeType.DAY, Statistics.DataType.COLLECTED)
-        fill(R.id.neo_home_energy_today_help, Statistics.TimeType.DAY, Statistics.DataType.HELPED)
-        fill(R.id.neo_home_energy_today_water, Statistics.TimeType.DAY, Statistics.DataType.WATERED)
+        // 列：今日 / 本月 / 今年；行：收 / 帮 / 浇 / 被水 / 浇水
+        fill(R.id.neo_home_energy_collect_day, Statistics.TimeType.DAY, Statistics.DataType.COLLECTED)
+        fill(R.id.neo_home_energy_collect_month, Statistics.TimeType.MONTH, Statistics.DataType.COLLECTED)
+        fill(R.id.neo_home_energy_collect_year, Statistics.TimeType.YEAR, Statistics.DataType.COLLECTED)
+        fill(R.id.neo_home_energy_help_day, Statistics.TimeType.DAY, Statistics.DataType.HELPED)
+        fill(R.id.neo_home_energy_help_month, Statistics.TimeType.MONTH, Statistics.DataType.HELPED)
+        fill(R.id.neo_home_energy_help_year, Statistics.TimeType.YEAR, Statistics.DataType.HELPED)
+        fill(R.id.neo_home_energy_water_day, Statistics.TimeType.DAY, Statistics.DataType.WATERED)
+        fill(R.id.neo_home_energy_water_month, Statistics.TimeType.MONTH, Statistics.DataType.WATERED)
+        fill(R.id.neo_home_energy_water_year, Statistics.TimeType.YEAR, Statistics.DataType.WATERED)
+        fill(R.id.neo_home_energy_watered_day, Statistics.TimeType.DAY, Statistics.DataType.WATEREDCOUNT)
+        fill(R.id.neo_home_energy_watered_month, Statistics.TimeType.MONTH, Statistics.DataType.WATEREDCOUNT)
+        fill(R.id.neo_home_energy_watered_year, Statistics.TimeType.YEAR, Statistics.DataType.WATEREDCOUNT)
+        fill(R.id.neo_home_energy_watering_day, Statistics.TimeType.DAY, Statistics.DataType.WATERINGCOUNT)
+        fill(R.id.neo_home_energy_watering_month, Statistics.TimeType.MONTH, Statistics.DataType.WATERINGCOUNT)
+        fill(R.id.neo_home_energy_watering_year, Statistics.TimeType.YEAR, Statistics.DataType.WATERINGCOUNT)
     }
 
     /** 注入状态广播：模块被 LSPosed 启用并注入支付宝后标记已激活；update 广播同步刷新统计。 */
@@ -443,7 +445,6 @@ class NeoMainActivity : AppCompatActivity() {
                         val uid = intent.getStringExtra("uid")
                         if (!uid.isNullOrEmpty() && uid != restoreSelectedAccount()) {
                             uiPrefs.edit().putString(KEY_LAST_SELECTED_USER, uid).apply()
-                            refreshSettingsAccountButton()
                         }
                     }
                     runTypeProbeTimes = 0
@@ -955,12 +956,6 @@ class NeoMainActivity : AppCompatActivity() {
     }
 
     private fun bindSettingsActions() {
-        // 右上角账号按钮：点击进入账号配置页（头像/信息/切换）
-        findViewById<View>(R.id.neo_settings_account_btn).setOnClickListener {
-            haptic(it)
-            startActivity(Intent(this, NeoAccountActivity::class.java))
-        }
-
         val list = findViewById<LinearLayout>(R.id.neo_setting_list)
         val marginPx = (12 * resources.displayMetrics.density).toInt()
         settings.forEach { setting ->
@@ -982,6 +977,7 @@ class NeoMainActivity : AppCompatActivity() {
             card.setOnClickListener {
                 haptic(card)
                 when (setting.name) {
+                    "账号" -> startActivity(Intent(this, NeoAccountActivity::class.java))
                     "备份与恢复" -> showBackupRestoreDialog()
                     "关于" -> startActivity(Intent(this, NeoAboutActivity::class.java))
                     "系统界面" -> startActivity(Intent(this, NeoSystemActivity::class.java))
@@ -1011,7 +1007,7 @@ class NeoMainActivity : AppCompatActivity() {
             lp.leftMargin = m
             lp.rightMargin = m
             lp.bottomMargin = mb
-            root.background = ContextCompat.getDrawable(this, R.drawable.neu_card_raised)
+            root.background = ContextCompat.getDrawable(this, R.drawable.neu_nav_float)
         } else {
             lp.leftMargin = 0
             lp.rightMargin = 0
@@ -1021,11 +1017,23 @@ class NeoMainActivity : AppCompatActivity() {
         root.layoutParams = lp
     }
 
-    /** 触感反馈：开关开启时执行振动。 */
+    /** 触感反馈：开关开启时振动（优先 Vibrator 直振，失败回退系统反馈）。 */
     private fun haptic(view: View) {
-        if (uiPrefs.getBoolean(NeoSystemActivity.KEY_UI_HAPTIC, false)) {
-            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+        if (!uiPrefs.getBoolean(NeoSystemActivity.KEY_UI_HAPTIC, false)) return
+        try {
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+            if (vibrator != null && vibrator.hasVibrator()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(25, 160))
+                } else {
+                    vibrator.vibrate(25)
+                }
+                return
+            }
+        } catch (_: Exception) {
+            // 无 VIBRATE 权限等异常时回退系统反馈
         }
+        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
     }
 
     /** 主题是否显式浅色（跟随系统=false 且 深色=false）。 */
@@ -1036,7 +1044,10 @@ class NeoMainActivity : AppCompatActivity() {
     private fun updateSystemSettingSub() {
         val list = findViewById<LinearLayout>(R.id.neo_setting_list) ?: return
         if (list.childCount == 0) return
-        val sub = list.getChildAt(0).findViewById<TextView>(R.id.neo_setting_sub) ?: return
+        // 账号条目排到列表第一位后，不能再固定取第一项，需按名称定位「系统界面」条目
+        val idx = settings.indexOfFirst { it.name == "系统界面" }
+        if (idx < 0 || idx >= list.childCount) return
+        val sub = list.getChildAt(idx).findViewById<TextView>(R.id.neo_setting_sub) ?: return
         val theme = when {
             themeIsLight() -> "浅色"
             AppConfig.INSTANCE.darkMode ?: false -> "深色"
@@ -1058,56 +1069,17 @@ class NeoMainActivity : AppCompatActivity() {
         return if (StringUtil.isEmpty(last)) null else last
     }
 
-    /** 刷新设置页右上角账号按钮：默认人像图标 / 圆形头像 / 首字符三态。 */
-    private fun refreshSettingsAccountButton() {
-        val icon = findViewById<ImageView>(R.id.neo_settings_account_icon)
-        val avatar = findViewById<NeoAsyncAvatarView>(R.id.neo_settings_account_avatar)
-        val char = findViewById<TextView>(R.id.neo_settings_account_char)
-        val userId = restoreSelectedAccount()
-        if (StringUtil.isEmpty(userId)) {
-            icon.visibility = View.VISIBLE
-            avatar.load(null)
-            avatar.visibility = View.GONE
-            char.visibility = View.GONE
-            return
-        }
-        icon.visibility = View.GONE
-        val entity = loadAccountUser(userId!!)
-        if (!StringUtil.isEmpty(entity?.avatar)) {
-            avatar.load(entity?.avatar)
-            avatar.visibility = View.VISIBLE
-            char.visibility = View.GONE
-        } else {
-            avatar.load(null)
-            avatar.visibility = View.GONE
-            char.text = entity?.showName?.take(1) ?: userId.take(1)
-            char.visibility = View.VISIBLE
-        }
-    }
-
-    /** 读取指定账号 self.json 得到用户实体（与模块版 ConfigTab 同款加载方式）。 */
-    private fun loadAccountUser(userId: String?): UserEntity? {
-        if (StringUtil.isEmpty(userId)) return null
-        UserIdMap.loadSelf(userId!!)
-        return UserIdMap.get(userId)
-    }
-
     private data class NeoSetting(val name: String, val iconRes: Int, val sub: String? = null)
 
     private val settings by lazy {
         listOf(
+            NeoSetting("账号", R.drawable.ic_neo_profile),
             NeoSetting("系统界面", R.drawable.ic_neo_sysui),
             NeoSetting("服务", R.drawable.ic_neo_service),
             NeoSetting("备份与恢复", R.drawable.ic_neo_backup),
-            NeoSetting("关于", R.drawable.ic_neo_about, "Xu v" + appVersionName()),
+            NeoSetting("关于", R.drawable.ic_neo_about),
             NeoSetting("服务器地址", R.drawable.ic_neo_server),
         )
-    }
-
-    private fun appVersionName(): String = try {
-        packageManager.getPackageInfo(packageName, 0).versionName ?: "?"
-    } catch (e: Exception) {
-        "?"
     }
 
     /** 备份与恢复主弹窗：立即备份 / 从备份恢复 / 从文件导入 / 清除备份。 */

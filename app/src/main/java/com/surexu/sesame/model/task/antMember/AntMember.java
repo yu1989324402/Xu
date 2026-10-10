@@ -257,7 +257,6 @@ public class AntMember extends ModelTask {
             //初始化AntMemberTaskListMap
             AntMemberTaskListMap.load();
             Set<String> blackList = new HashSet<>();
-            //blackList.add("去淘金币逛一逛");
             // 可继续添加更多黑名单任务
             
             Set<String> whiteList = new HashSet<>();// 从黑名单中移除该任务
@@ -307,7 +306,6 @@ public class AntMember extends ModelTask {
                 }
                 
                 // 游戏中心任务流里的任务也要进候选，否则用户看不到、也无法手动勾选
-                // （原读取的 v4.queryTaskList 实测恒返回空 data，连带这里一直拿不到任务）
                 for (int feedPage = 0; feedPage < 5; feedPage++) {
                     jo = new JSONObject(AntMemberRpcCall.gameCenterGameFeeds(feedPage, 10));
                     if (!MessageUtil.checkSuccess(TAG, jo)) {
@@ -1598,7 +1596,7 @@ public class AntMember extends ModelTask {
                     TaskAlternative.trigger(pendingVerifyTasks, taskId, subTitle, taskId, sceneCode,
                             AntMemberRpcCall.DO_FARM_TASK_VERSION, "游戏中心", msg -> Log.other(msg));
                 } else {
-                    Log.other("游戏中心⚠️未完成[" + subTitle + "]#actionType=" + actionType);
+                    Log.other("游戏中心⚠️未完成[" + subTitle + "]");
                     //检查并标记黑名单任务
                     MessageUtil.checkResultCodeAndMarkTaskBlackList("AntMemberTaskList", subTitle, doTaskjo);
                 }
@@ -1918,6 +1916,9 @@ public class AntMember extends ModelTask {
                 return;
             }
             JSONArray toCompleteVOS = data.getJSONArray("toCompleteVOS");
+            // 本轮已上报的任务（templateId → 标题）及上报前完成度，用于回读校验
+            LinkedHashMap<String, String> reported = new LinkedHashMap<>();
+            LinkedHashMap<String, Integer> beforeComplete = new LinkedHashMap<>();
             for (int i = 0; i < toCompleteVOS.length(); i++) {
                 JSONObject toCompleteVO = toCompleteVOS.getJSONObject(i);
                 String taskTitle = toCompleteVO.has("title") ? toCompleteVO.getString("title") : "未知任务";
@@ -1941,32 +1942,18 @@ public class AntMember extends ModelTask {
                 String taskTemplateId = toCompleteVO.getString("templateId");
                 int needCompleteNum = toCompleteVO.has("needCompleteNum") ? toCompleteVO.getInt("needCompleteNum") : 1;
                 int completedNum = toCompleteVO.optInt("completedNum", 0);
-                String s = null;
-                JSONObject responseObj = null;
-                
-                // 实测（2026-09-22 官方抓包 logs/chk_sesame2）：芝麻粒任务官方走的是
-                // CreditAccumulateStrategyRpcManager.taskFeedback（actionType=TO_COMPLETE + bizType=LIFE_RECORD
-                // + sceneCode=zml + version=new），官方全程不发 PromiseRpcManager.joinActivity/pushActivity。
-                // 原先的 join（领取）+ push（完成）那条链服务端会拒——「存在进行中的生活记录」
-                // （PROMISE_HAS_PROCESSING_TEMPLATE）/「参数[promiseActivityExtCheck]不是有效的入参」（ILLEGAL_ARGUMENT），
-                // 而且只会在服务端留下一条永远"进行中"的生活记录，故整段废弃
-                // （原判据 toCompleteVO.has("todayFinish") 也失效：服务端根本不返回该字段）
-                
-                // 完成任务：官方实测走 taskFeedback，不再走 PromiseRpcManager.pushActivity
-                for (int j = completedNum; j < needCompleteNum; j++) {
-                    s = AntMemberRpcCall.feedBackSesameTaskNew(taskTemplateId);
-                    TimeUtil.sleep(2000);
-                    responseObj = new JSONObject(s);
-                    //检查并标记黑名单任务
-                    MessageUtil.checkResultCodeAndMarkTaskBlackList("MemberCreditSesameTaskList", taskTitle, responseObj);
-                    
-                    if (MessageUtil.checkResultCode(TAG, responseObj)) {
-                        Log.record("芝麻信用💳完成任务[" + taskTitle + "]#(" + (j + 1) + "/" + needCompleteNum + "天)");
-                    }
-                    else {
-                        Log.error("芝麻信用💳完成任务[" + taskTitle + "]失败#" + s);
-                    }
+                // 今日已上报且回读确认状态没推进：不再重复上报（次日再试），避免每轮刷同一批
+                if (Status.hasFlagToday("AntMember::sesame::" + taskTitle)) {
+                    continue;
                 }
+                
+                // 上报被受理 ≠ 任务完成：无论走到哪一步都登记回读，真实状态一律以回读为准
+                String recordId = activeSesameRecordId(data, taskTemplateId);
+                if (recordId == null || !reportSesameTask(taskTitle, taskTemplateId, recordId)) {
+                    continue;
+                }
+                reported.put(taskTemplateId, taskTitle);
+                beforeComplete.put(taskTemplateId, completedNum);
                 
                 jo = new JSONObject(AntMemberRpcCall.queryCreditFeedback());
                 TimeUtil.sleep(300);
@@ -1989,6 +1976,70 @@ public class AntMember extends ModelTask {
                     }
                 }
             }
+            
+            // 回读校验：上报被受理不等于任务完成，按服务端最新完成度判定，日志只写真实结果
+            if (!reported.isEmpty()) {
+                TimeUtil.sleep(500);
+                JSONObject freshJo = new JSONObject(AntMemberRpcCall.CreditAccumulateStrategyRpcManager());
+                LinkedHashMap<String, String> freshProgress = new LinkedHashMap<>();
+                boolean freshOk = false;
+                if (MessageUtil.checkResultCode(TAG, freshJo) && freshJo.has("data")) {
+                    JSONArray freshList = freshJo.getJSONObject("data").optJSONArray("toCompleteVOS");
+                    freshOk = true;
+                    if (freshList != null) {
+                        for (int k = 0; k < freshList.length(); k++) {
+                            JSONObject vo = freshList.getJSONObject(k);
+                            String tid = vo.optString("templateId", "");
+                            if (tid.isEmpty()) {
+                                continue;
+                            }
+                            int need = vo.has("needCompleteNum") ? vo.getInt("needCompleteNum") : 1;
+                            if (vo.optBoolean("finishFlag", false) || "已完成".equals(vo.optString("actionText", ""))) {
+                                freshProgress.put(tid, "DONE");
+                            } else {
+                                freshProgress.put(tid, vo.optInt("completedNum", 0) + "/" + need);
+                            }
+                        }
+                    }
+                }
+                for (Map.Entry<String, String> entry : reported.entrySet()) {
+                    String tid = entry.getKey();
+                    String title = entry.getValue();
+                    Integer before = beforeComplete.get(tid);
+                    int beforeNum = before == null ? 0 : before;
+                    if (!freshOk) {
+                        Log.other("芝麻信用💳[" + title + "]已上报，回读校验未执行");
+                        continue;
+                    }
+                    String progress = freshProgress.get(tid);
+                    if (progress == null) {
+                        Log.other("芝麻信用💳完成任务[" + title + "]#已不在待完成列表");
+                        continue;
+                    }
+                    if ("DONE".equals(progress)) {
+                        Log.other("芝麻信用💳完成任务[" + title + "]#已标记完成");
+                        continue;
+                    }
+                    int slash = progress.indexOf('/');
+                    int nowNum = slash <= 0 ? 0 : Integer.parseInt(progress.substring(0, slash));
+                    int needNum = slash <= 0 ? 1 : Integer.parseInt(progress.substring(slash + 1));
+                    if (nowNum <= beforeNum) {
+                        Log.other("芝麻信用💳[" + title + "]上报未生效#仍为(" + progress + "天)，今日不再重试");
+                        Status.flagToday("AntMember::sesame::" + title);
+                        // 这类任务服务端要求真实参与（push 的 promiseActivityExtCheck 校验），自动完成不了：
+                        // 走"连续命中确认"（累计 3 次才真拉黑），避免把服务端异步未落状态的正常任务一次误杀
+                        if (AutoMemberCreditSesameTaskList.getValue()) {
+                            MessageUtil.MarkTaskBlackListConfirm("AntMember", "MemberCreditSesameTaskList", "芝麻粒任务", title);
+                        }
+                    } else if (nowNum >= needNum) {
+                        Log.other("芝麻信用💳完成任务[" + title + "]#(" + progress + "天)");
+                    } else {
+                        // 多天任务：今天只推进一份，剩下的留给次日
+                        Log.other("芝麻信用💳完成任务[" + title + "]#(" + progress + "天)，剩余次日继续");
+                        Status.flagToday("AntMember::sesame::" + title);
+                    }
+                }
+            }
             jo = new JSONObject(AntMemberRpcCall.queryCreditFeedback());
             TimeUtil.sleep(300);
             if (!MessageUtil.checkResultCode(TAG, jo)) {
@@ -2007,6 +2058,140 @@ public class AntMember extends ModelTask {
         catch (Throwable t) {
             Log.printStackTrace(TAG, t);
         }
+    }
+    
+    /**
+     * 芝麻粒任务上报：joinActivity → taskFeedback → pushActivity 须依次全部发送；
+     * join 因"存在进行中的记录"被拒时，刷新列表取本任务那条记录继续推完。
+     * <p>返回是否走到 push；未发送 push 的不计失败，也不登记回读。
+     *
+     * @param recordId 任务列表已给出的进行中记录，为空时才发 join
+     */
+    private boolean reportSesameTask(String taskTitle, String taskTemplateId, String recordId) {
+        try {
+            if (StringUtil.isEmpty(recordId)) {
+                JSONObject joinJo = new JSONObject(AntMemberRpcCall.joinSesameTask(taskTemplateId));
+                TimeUtil.sleep(500);
+                if (MessageUtil.checkResultCode(TAG, joinJo)) {
+                    JSONObject joinData = joinJo.optJSONObject("data");
+                    recordId = joinData == null ? "" : joinData.optString("recordId", "");
+                } else {
+                    // 全局只允许一条进行中记录：刷新列表取本任务那条，取不到再回落到最近操作记录
+                    if ("PROMISE_HAS_PROCESSING_TEMPLATE".equals(joinJo.optString("resultCode"))) {
+                        JSONObject fresh = new JSONObject(AntMemberRpcCall.queryAvailableSesameTask());
+                        TimeUtil.sleep(300);
+                        if (MessageUtil.checkResultCode(TAG, fresh) && fresh.optJSONObject("data") != null) {
+                            recordId = activeSesameRecordId(fresh.optJSONObject("data"), taskTemplateId);
+                            if (recordId == null) {
+                                return false;
+                            }
+                        }
+                    }
+                    if (StringUtil.isEmpty(recordId)) {
+                        recordId = lastOperateRecordId(taskTemplateId);
+                    }
+                    if (!StringUtil.isEmpty(recordId)) {
+                        Log.other("芝麻信用💳[" + taskTitle + "]沿用进行中的记录");
+                    }
+                }
+            }
+            if (StringUtil.isEmpty(recordId)) {
+                Log.other("芝麻信用💳上报[" + taskTitle + "]无可用记录#未发送反馈与push，不计失败");
+                return false;
+            }
+            
+            JSONObject feedbackJo = new JSONObject(AntMemberRpcCall.feedBackSesameTaskNew(taskTemplateId));
+            TimeUtil.sleep(500);
+            //检查并标记黑名单任务
+            MessageUtil.checkResultCodeAndMarkTaskBlackList("MemberCreditSesameTaskList", taskTitle, feedbackJo);
+            if (!MessageUtil.checkResultCode(TAG, feedbackJo)) {
+                Log.other("芝麻信用💳上报[" + taskTitle + "]未受理#未发送push");
+                return false;
+            }
+            
+            JSONObject pushJo = new JSONObject(AntMemberRpcCall.finishSesameTask(recordId, ""));
+            TimeUtil.sleep(500);
+            if ("ILLEGAL_ARGUMENT".equals(pushJo.optString("resultCode"))) {
+                // 真实跳转类任务不可能自动完成，服务端固定拒 push：一次即永久拉黑，该错误不再打印
+                if (AutoMemberCreditSesameTaskList.getValue()) {
+                    MessageUtil.MarkTaskBlackListPermanent("AntMember", "MemberCreditSesameTaskList", "芝麻粒任务", taskTitle);
+                    Log.other("芝麻信用💳[" + taskTitle + "]#真实跳转类，无法自动完成，已加入永久黑名单");
+                } else {
+                    Log.other("芝麻信用💳[" + taskTitle + "]#真实跳转类，无法自动完成");
+                }
+                return false;
+            }
+            if (!MessageUtil.checkResultCode(TAG, pushJo)) {
+                Log.other("芝麻信用💳[" + taskTitle + "]push被拒#不影响完成判定");
+            }
+            return true;
+            
+        } catch (Throwable t) {
+            Log.err(TAG, "reportSesameTask err:", t);
+        }
+        return false;
+    }
+    
+    /**
+     * 取回「最近一次操作任务」的 recordId：仅当它就是本任务且仍在进行中（finishFlag=false）时返回，否则 null。
+     * <p>用途见 {@link #reportSesameTask}：join 被「存在进行中的生活记录」拒绝时，必须用原记录的 recordId 才能推完它。
+     */
+    private String lastOperateRecordId(String taskTemplateId) {
+        try {
+            JSONObject jo = new JSONObject(AntMemberRpcCall.queryLastOperateTask());
+            TimeUtil.sleep(300);
+            if (!MessageUtil.checkResultCode(TAG, jo)) {
+                return null;
+            }
+            JSONObject data = jo.optJSONObject("data");
+            JSONObject vo = data == null ? null : data.optJSONObject("lastOperateTaskVO");
+            if (vo == null || !taskTemplateId.equals(vo.optString("templateId", ""))) {
+                return null;
+            }
+            if (vo.optBoolean("finishFlag", false)) {
+                return null;
+            }
+            String recordId = vo.optString("recordId", "");
+            return StringUtil.isEmpty(recordId) ? null : recordId;
+        } catch (Throwable t) {
+            Log.err(TAG, "lastOperateRecordId err:", t);
+        }
+        return null;
+    }
+    
+    /**
+     * 从任务列表取本任务进行中的记录：recordId 须为字符串且仍在进行中，同一任务出现多条不一致记录时返回 null。
+     *
+     * @return 进行中的 recordId；空串表示列表无本任务记录，null 表示列表数据可疑
+     */
+    private String activeSesameRecordId(JSONObject data, String taskTemplateId) {
+        JSONObject daily = data.optJSONObject("dailyTaskListVO");
+        JSONArray[] lists = {data.optJSONArray("toCompleteVOS"),
+                daily == null ? null : daily.optJSONArray("waitCompleteTaskVOS"),
+                daily == null ? null : daily.optJSONArray("waitJoinTaskVOS")};
+        String recordId = "";
+        for (JSONArray list : lists) {
+            for (int i = 0; list != null && i < list.length(); i++) {
+                JSONObject task = list.optJSONObject(i);
+                if (task == null || !taskTemplateId.equals(task.optString("templateId", ""))) {
+                    continue;
+                }
+                Object value = task.opt("recordId");
+                if (value == null || JSONObject.NULL.equals(value) || "".equals(value)) {
+                    continue;
+                }
+                boolean valid = value instanceof String && !((String) value).trim().isEmpty()
+                        && Boolean.FALSE.equals(task.opt("finishFlag"))
+                        && task.optInt("completedNum", 0) < task.optInt("needCompleteNum", 1)
+                        && (recordId.isEmpty() || recordId.equals(value));
+                if (!valid) {
+                    Log.other("芝麻信用💳记录校验未通过#[" + taskTemplateId + "]跳过");
+                    return null;
+                }
+                recordId = (String) value;
+            }
+        }
+        return recordId;
     }
     
     private void CheckInTaskRpcManager() {
@@ -2226,15 +2411,12 @@ public class AntMember extends ModelTask {
                 // 根据 taskCode 执行不同的操作
                 if ("WELFARE_PLUS_ANT_FOREST".equals(taskCode) || "WELFARE_PLUS_ANT_OCEAN".equals(taskCode)) {
                     if ("WELFARE_PLUS_ANT_FOREST".equals(taskCode)) {
-                        //String forestHomePageResponse = AntMemberRpcCall.queryforestHomePage();
-                        //TimeUtil.sleep(2000);
                         String forestTaskResponse = AntMemberRpcCall.forestTask();
                         TimeUtil.sleep(500);
                         String forestreceiveTaskAward = AntMemberRpcCall.forestreceiveTaskAward();
                     }
                     else if ("WELFARE_PLUS_ANT_OCEAN".equals(taskCode)) {
                         //String oceanHomePageResponse = AntMemberRpcCall.queryoceanHomePage();
-                        //TimeUtil.sleep(2000);
                         String oceanTaskResponse = AntMemberRpcCall.oceanTask();
                         TimeUtil.sleep(500);
                         String oceanreceiveTaskAward = AntMemberRpcCall.oceanreceiveTaskAward();

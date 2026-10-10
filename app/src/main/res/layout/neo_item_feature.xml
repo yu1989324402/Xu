@@ -10,14 +10,15 @@
     android:paddingVertical="12dp">
 
     <FrameLayout
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:background="@drawable/neu_logo_slot">
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:background="@drawable/neu_feature_slot">
 
         <ImageView
             android:id="@+id/neo_item_icon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_margin="1dp"
             android:contentDescription="@null"
             android:scaleType="center" />
     </FrameLayout>

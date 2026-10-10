@@ -128,7 +128,7 @@ public final class GoldenBeansTasks {
                 String signKey = sign.optString("signKey", "").trim();
                 if (signKey.isEmpty()) {
                     signFailed = true;
-                    Log.goldenBeans("金豆[" + entry.alias + "]签到⚠️缺少服务端signKey");
+                    Log.goldenBeans("金豆[" + entry.alias + "]签到⚠️缺少服务端密钥");
                     return null;
                 }
                 JSONObject signResponse = GoldenBeansSupport.parse(
@@ -185,7 +185,7 @@ public final class GoldenBeansTasks {
                 triggerType = goldenbeansRpcCall.TRIGGER_MARKETING_POPUP;
             }
             if (taskId.isEmpty()) {
-                Log.goldenBeans("金豆[" + entry.alias + "]弹窗⚠️缺少服务端taskId");
+                Log.goldenBeans("金豆[" + entry.alias + "]弹窗⚠️缺少服务端任务标识");
                 return true;
             }
             JSONObject triggerResponse = GoldenBeansSupport.parse(goldenbeansRpcCall.fireOf(

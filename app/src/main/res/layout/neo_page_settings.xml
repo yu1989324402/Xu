@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 设置页：居中标题 + 右上角图标 + 设置条目列表（对应新版截图） -->
+<!-- 设置页：居中标题 + 设置条目列表（对应新版截图） -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,7 +14,7 @@
         android:paddingTop="18dp"
         android:paddingBottom="28dp">
 
-        <!-- 头部：居中标题 + 右上角图标（用户/分享） -->
+        <!-- 头部：居中标题 -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -27,59 +27,6 @@
                 android:textColor="@color/neo_text_primary"
                 android:textSize="22sp"
                 android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|center_vertical"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <!-- 账号按钮：默认人像图标；选中账号且有头像时显示圆形头像；无头像时显示首字符。点击进入账号配置页 -->
-                <FrameLayout
-                    android:id="@+id/neo_settings_account_btn"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="10dp"
-                    android:background="@drawable/neu_logo_slot"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <ImageView
-                        android:id="@+id/neo_settings_account_icon"
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_gravity="center"
-                        android:contentDescription="@null"
-                        android:src="@drawable/ic_neo_profile" />
-
-                    <com.surexu.sesame.ui.neo.NeoAsyncAvatarView
-                        android:id="@+id/neo_settings_account_avatar"
-                        android:layout_width="34dp"
-                        android:layout_height="34dp"
-                        android:layout_gravity="center"
-                        android:contentDescription="@null"
-                        android:visibility="gone" />
-
-                    <TextView
-                        android:id="@+id/neo_settings_account_char"
-                        android:layout_width="34dp"
-                        android:layout_height="34dp"
-                        android:layout_gravity="center"
-                        android:background="@drawable/neu_logo_slot"
-                        android:gravity="center"
-                        android:textColor="@color/neo_primary"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:visibility="gone" />
-                </FrameLayout>
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:contentDescription="@null"
-                    android:src="@drawable/ic_neo_share" />
-            </LinearLayout>
         </FrameLayout>
 
         <!-- 设置条目容器（Kotlin 动态填充） -->

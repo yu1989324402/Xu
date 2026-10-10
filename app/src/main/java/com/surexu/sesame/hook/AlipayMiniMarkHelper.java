@@ -50,7 +50,6 @@ public class AlipayMiniMarkHelper {
         try {
             Object resultObj = XHelpers.callStaticMethod(clazz, "getAlipayMiniMark", str, str2);
             String result = (resultObj instanceof String) ? (String) resultObj : "";
-            //Log.other("getAlipayMiniMark 响应 -> mark:" + result);
             return result;
         } catch (Throwable e) {
             if (!callFailureLogged) {

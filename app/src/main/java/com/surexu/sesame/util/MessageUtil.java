@@ -73,13 +73,17 @@ public class MessageUtil {
     }
 
     /**
-     * 打印失败应答。唯一的特殊处理是**服务端繁忙（102）的日志降噪**：同一 tag 累计打印满
-     * {@link #SERVER_BUSY_LOG_LIMIT} 次后不再打印，避免限流期间刷屏。
+     * 打印失败应答。两类降噪：**服务端繁忙（102）**按 tag 限次打印；**400000040「不支持rpc调用」**
+     * 只写运行日志、不记模块错误——它不代表任务做不了（调用方会转另一种实现方案）。
      * <p>注意：这里不拦截、不退避、不跳过——请求该发照发，只是少写几行日志。
      */
     public static void printErrorMessage(String tag, JSONObject jo, String errorMessageField) {
         try {
             String memo = jo.getString(errorMessageField);
+            if (isUnsupportedRpc(jo)) {
+                Log.i(tag, jo.toString());
+                return;
+            }
             if (isServerBusy(jo)) {
                 if (!shouldLogServerBusy(tag)) {
                     return;
@@ -478,6 +482,37 @@ public class MessageUtil {
     }
 
     /**
+     * 自动拉黑（一次即永久）：用于确认无法自动完成、且重复上报只会浪费请求的任务。
+     * <p>与 {@link #MarkTaskBlackList} 的区别：黑名单记录直接写入"永久"标记，
+     * 绝不进入超期自动解禁重试生命周期。
+     */
+    public static void MarkTaskBlackListPermanent(String ModelFieldsType, String listTitle, String TaskListName, String taskTitle) {
+        ConfigV2 config = ConfigV2.INSTANCE;
+        ModelFields TaskModelFields = config.getModelFieldsMap().get(ModelFieldsType);
+        SelectModelField TaskSelectModelField = (SelectModelField) TaskModelFields.get(listTitle);
+        if (TaskSelectModelField == null) {
+            Log.record("添加" + TaskListName + "黑名单失败：" + taskTitle);
+            return;
+        }
+        // 白名单拦截：白名单任务只由"用户手动"决定是否拉黑，自动拉黑机制不插手
+        Set<String> white = TASK_WHITE_LIST.get(listTitle);
+        if (white != null && white.contains(taskTitle)) {
+            Log.record("[" + TaskListName + "]任务[" + taskTitle + "]在白名单中，跳过自动拉黑");
+            return;
+        }
+        if (!TaskSelectModelField.contains(taskTitle)) {
+            TaskSelectModelField.add(taskTitle, 0); // 数组类型忽略count，传0
+        }
+        if (ConfigV2.save(UserIdMap.getCurrentUid(), false)) {
+            Log.record("自动拉黑🔒永久在[" + TaskListName + "]中添加[" + taskTitle + "]黑名单:" + TaskSelectModelField.getValue());
+            // 永久拉黑：不进入"解禁重试"生命周期
+            recordAutoBlackPermanent(ModelFieldsType, listTitle, taskTitle);
+        } else {
+            Log.record("添加" + TaskListName + "黑名单失败：" + taskTitle);
+        }
+    }
+
+    /**
      * 自动拉黑（需连续命中确认）：用于错误文案模糊、可能只是临时状态的任务。
      * <p>连续命中 {@link #BLACKLIST_CONFIRM_HITS} 次才真正拉黑；未达标时只记录命中并打日志，
      * 避免一次性的临时故障（活动当天未配置等）被永久跳过。
@@ -734,6 +769,22 @@ public class MessageUtil {
             } else {
                 record.blackDay = todayIndex();
             }
+            AutoBlackListMap.put(key, record.format());
+            AutoBlackListMap.save();
+        } catch (Throwable t) {
+            Log.printStackTrace(TAG, t);
+        }
+    }
+
+    private static void recordAutoBlackPermanent(String module, String listTitle, String taskTitle) {
+        try {
+            String key = autoBlackKey(module, listTitle, taskTitle);
+            AutoBlackListMap.ensureLoaded();
+            AutoBlackRecord record = new AutoBlackRecord();
+            record.hits = 0;
+            record.lastDay = todayIndex();
+            record.retry = BLACKLIST_MAX_RETRY;
+            record.blackDay = AutoBlackRecord.PERMANENT;
             AutoBlackListMap.put(key, record.format());
             AutoBlackListMap.save();
         } catch (Throwable t) {

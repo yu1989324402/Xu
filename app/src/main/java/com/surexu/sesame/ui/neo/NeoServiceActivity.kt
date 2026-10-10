@@ -6,6 +6,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.PowerManager
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.Build
 import android.provider.Settings
 import android.view.HapticFeedbackConstants
 import android.view.View
@@ -193,7 +196,24 @@ class NeoServiceActivity : AppCompatActivity() {
         renderRows()
     }
 
+    private val uiPrefs by lazy { getSharedPreferences("sesame_ui_state", MODE_PRIVATE) }
+
+    /** 触感反馈：开关开启时振动（优先 Vibrator 直振，失败回退系统反馈）。 */
     private fun haptic(view: View) {
+        if (!uiPrefs.getBoolean(NeoSystemActivity.KEY_UI_HAPTIC, false)) return
+        try {
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+            if (vibrator != null && vibrator.hasVibrator()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(25, 160))
+                } else {
+                    vibrator.vibrate(25)
+                }
+                return
+            }
+        } catch (_: Exception) {
+            // 无 VIBRATE 权限等异常时回退系统反馈
+        }
         view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
     }
 

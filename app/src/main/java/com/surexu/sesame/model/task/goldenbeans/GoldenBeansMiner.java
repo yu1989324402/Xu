@@ -38,7 +38,7 @@ public final class GoldenBeansMiner {
             }
             JSONObject minerInfo = indexJo.optJSONObject("minerInfo");
             if (minerInfo == null) {
-                Log.goldenBeans("金猫矿工⚠️响应缺少minerInfo");
+                Log.goldenBeans("金猫矿工⚠️响应缺少矿工信息");
                 return;
             }
             JSONObject taskProgress = minerInfo.optJSONObject("taskProgress");

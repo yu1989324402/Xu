@@ -162,11 +162,11 @@
                     android:layout_height="wrap_content"
                     android:text="能量统计"
                     android:textColor="@color/neo_text_primary"
-                    android:textSize="16sp"
+                    android:textSize="13sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- 表头 -->
+                        <!-- 表头：今日 / 本月 / 今年（蓝色加粗，右对齐） -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -184,219 +184,270 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="收取"
-                    android:textColor="@color/neo_text_hint"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="帮收"
-                    android:textColor="@color/neo_text_hint"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="浇水"
-                    android:textColor="@color/neo_text_hint"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <!-- 总量行 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="56dp"
-                    android:layout_height="wrap_content"
-                    android:text="总量"
-                    android:textColor="@color/neo_text_secondary"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/neo_home_energy_total_collect"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="0"
-                    android:textColor="@color/neo_primary"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/neo_home_energy_total_help"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="0"
-                    android:textColor="@color/neo_primary"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/neo_home_energy_total_water"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="0"
-                    android:textColor="@color/neo_primary"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- 今年行 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="56dp"
-                    android:layout_height="wrap_content"
-                    android:text="今年"
-                    android:textColor="@color/neo_text_secondary"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/neo_home_energy_year_collect"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="0"
-                    android:textColor="@color/neo_primary"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/neo_home_energy_year_help"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="0"
-                    android:textColor="@color/neo_primary"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/neo_home_energy_year_water"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="0"
-                    android:textColor="@color/neo_primary"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- 本月行 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="56dp"
-                    android:layout_height="wrap_content"
-                    android:text="本月"
-                    android:textColor="@color/neo_text_secondary"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/neo_home_energy_month_collect"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="0"
-                    android:textColor="@color/neo_primary"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/neo_home_energy_month_help"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="0"
-                    android:textColor="@color/neo_primary"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/neo_home_energy_month_water"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="0"
-                    android:textColor="@color/neo_primary"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- 今日行 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="56dp"
-                    android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:text="今日"
+                    android:textColor="@color/neo_blue"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="本月"
+                    android:textColor="@color/neo_blue"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="今年"
+                    android:textColor="@color/neo_blue"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 收行 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="56dp"
+                    android:layout_height="wrap_content"
+                    android:text="收"
                     android:textColor="@color/neo_text_secondary"
                     android:textSize="13sp" />
 
-                <TextView
-                    android:id="@+id/neo_home_energy_today_collect"
+                                <TextView
+                    android:id="@+id/neo_home_energy_collect_day"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="end"
+                    android:gravity="center"
                     android:text="0"
-                    android:textColor="@color/neo_primary"
-                    android:textSize="15sp"
+                    android:textColor="@color/neo_text_primary"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/neo_home_energy_today_help"
+                                <TextView
+                    android:id="@+id/neo_home_energy_collect_month"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="end"
+                    android:gravity="center"
                     android:text="0"
-                    android:textColor="@color/neo_primary"
-                    android:textSize="15sp"
+                    android:textColor="@color/neo_text_primary"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/neo_home_energy_today_water"
+                                <TextView
+                    android:id="@+id/neo_home_energy_collect_year"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="end"
+                    android:gravity="center"
                     android:text="0"
-                    android:textColor="@color/neo_primary"
-                    android:textSize="15sp"
+                    android:textColor="@color/neo_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 帮行 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="56dp"
+                    android:layout_height="wrap_content"
+                    android:text="帮"
+                    android:textColor="@color/neo_text_secondary"
+                    android:textSize="13sp" />
+
+                                <TextView
+                    android:id="@+id/neo_home_energy_help_day"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/neo_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                                <TextView
+                    android:id="@+id/neo_home_energy_help_month"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/neo_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                                <TextView
+                    android:id="@+id/neo_home_energy_help_year"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/neo_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 浇行 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="56dp"
+                    android:layout_height="wrap_content"
+                    android:text="浇"
+                    android:textColor="@color/neo_text_secondary"
+                    android:textSize="13sp" />
+
+                                <TextView
+                    android:id="@+id/neo_home_energy_water_day"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/neo_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                                <TextView
+                    android:id="@+id/neo_home_energy_water_month"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/neo_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                                <TextView
+                    android:id="@+id/neo_home_energy_water_year"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/neo_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 被水行 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="56dp"
+                    android:layout_height="wrap_content"
+                    android:text="被水"
+                    android:textColor="@color/neo_text_secondary"
+                    android:textSize="13sp" />
+
+                                <TextView
+                    android:id="@+id/neo_home_energy_watered_day"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/neo_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                                <TextView
+                    android:id="@+id/neo_home_energy_watered_month"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/neo_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                                <TextView
+                    android:id="@+id/neo_home_energy_watered_year"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/neo_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 浇水行 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="56dp"
+                    android:layout_height="wrap_content"
+                    android:text="浇水"
+                    android:textColor="@color/neo_text_secondary"
+                    android:textSize="13sp" />
+
+                                <TextView
+                    android:id="@+id/neo_home_energy_watering_day"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/neo_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                                <TextView
+                    android:id="@+id/neo_home_energy_watering_month"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/neo_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                                <TextView
+                    android:id="@+id/neo_home_energy_watering_year"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/neo_text_primary"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>

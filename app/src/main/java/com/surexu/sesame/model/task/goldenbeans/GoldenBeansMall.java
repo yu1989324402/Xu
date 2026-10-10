@@ -79,7 +79,7 @@ public final class GoldenBeansMall {
         }
         JSONArray itemList = jo.optJSONArray("itemInfoVOList");
         if (itemList == null) {
-            Log.goldenBeans("金豆商城⚠️商品列表结构异常#无 itemInfoVOList");
+            Log.goldenBeans("金豆商城⚠️商品列表结构异常");
             return null;
         }
         JSONArray result = new JSONArray();

@@ -26,32 +26,70 @@ public final class TaskAlternative {
     public static final String DEFAULT_VERSION = "1.8.2302070202.46";
 
     /**
-     * 交易/履约类 bizKey（下单、支付、购买、缴费、还款、充值、淘宝等）。
-     * 用 doFarmTask 伪申报会被判风险操作（服务端回 1009 风控），一律不发。
+     * 交易/履约类任务关键词：**只认 bizKey**（服务端稳定字段），这类任务只能靠真实交易完成，
+     * 用 doFarmTask 伪申报会被判风险操作（服务端回 1009 风控），一律不发，交自动黑名单。
+     *
+     * <p>关键词逐条来自实际日志里出现过的 bizKey：
+     * <pre>
+     * OFFLINE_PAY / ONLINE_PAY / MYZY_pay_* / ORCHARD_NORMAL_XIANXIAZHIFU100  → 支付
+     * LSHS_xiadan_202509 / SHANGOU_xiadan / HANGOU_xiadan                   → 下单（回收/闪购）
+     * ORCHARD_NCLY_CHARGE1_XDDQ / ORCHARD_NORMAL_CHONGZHI9                  → 充值
+     * GOLDENBEAN_GAME_CZ_XDDQ_AI / GROUP_DAILY_GAME_CZ / 2026cc_cz6ylyb_fz  → 游戏充值
+     * ORCHARD_NORMAL_KUAIDI100 / ORCHARD_NORMAL_JIUYIHUISHOU_VISIT          → 寄件/回收
+     * </pre>
+     *
+     * <p><b>不要再加 {@code taobao} 这类宽泛词、也不要匹配任务标题</b>：标题/宽泛词会把外跳类
+     * 任务误伤成交易类而拒绝申报（如 {@code ORCHARD_NORMAL_TAOBAOTAOLIPAI_VISIT} 曾被 taobao
+     * 误拦，随后又被自动拉黑）——外跳类本应去尝试。
+     *
+     * <p><b>匹配方式按词的歧义度分三档，不能一律用 {@code contains}</b>：短词/缩写（{@code pay}、
+     * {@code charge}、{@code _cz}）作为自由子串会命中任意夹带该串的 bizKey——实测良民任务
+     * 「逛羊舍喂小羊」等即因此被误判为交易类而永久拉黑。
+     * <ul>
+     *   <li>{@link #LONG_KEYWORDS}：长拼音词（&ge;6 字母），夹带概率极低，用子串匹配；</li>
+     *   <li>{@link #SHORT_KEYWORDS}：英文短词（&le;5 字母），要求两侧不得紧邻字母；</li>
+     *   <li>{@code cz} 特判：仅认 {@code game_cz}，或 {@code _cz} 后跟数字（充值 N 元，如
+     *       {@code 2026cc_cz6ylyb_fz}）。裸 {@code _cz} 结尾 / 被字母夹带的 {@code cz} 一律不认。</li>
+     * </ul>
      */
-    private static final String[] TRANSACTION_BIZ_KEYWORDS = {
-            "xiadan", "zhifu", "pay", "goumai", "jiaofei", "huankuan", "chongzhi",
-            "taobao", "babafarm_tb", "70000"
+    private static final String[] LONG_KEYWORDS = {
+            // 支付 / 下单 / 缴费 / 充值（拼音连写，长度足够区分）
+            "xiadan", "zhifu", "goumai", "jiaofei", "huankuan", "chongzhi",
+            // 履约：寄件 / 回收
+            "kuaidi", "huishou",
+            // 酒店
+            "jiudian",
     };
 
-    /** bizKey 是否属于交易/履约类（下单、支付、购买、缴费、还款、充值、淘宝）。 */
+    /** 英文短词：两侧不得紧邻字母（数字/下划线/连字符/首尾都算边界）。 */
+    private static final String[] SHORT_KEYWORDS = {
+            "pay", "charge",
+            // 租赁 / 出行 / 机票 / 余额宝
+            "zulin", "zuche", "dache", "jipiao", "yuebao",
+    };
+
+    /** {@code _cz} 后跟数字（充值 N 元）的判据，如 {@code 2026cc_cz6ylyb_fz}。 */
+    private static final Pattern CZ_AMOUNT = Pattern.compile("_cz[0-9]");
+
+    /** bizKey 命中交易/履约类关键词，即视为交易/履约类。 */
     public static boolean isTransactionTask(String bizKey) {
         if (bizKey == null || bizKey.isEmpty()) {
             return false;
         }
         String key = bizKey.toLowerCase();
-        for (String keyword : TRANSACTION_BIZ_KEYWORDS) {
-            // 纯数字关键词按「整段数字」匹配：直接 contains 时 70000 会命中 appId
-            // （如 2060170000359285 里的 "170000"）,把「玩游戏」这类任务误判成交易类
-            if (keyword.matches("[0-9]+")) {
-                if (Pattern.compile("(?<![0-9])" + keyword + "(?![0-9])").matcher(key).find()) {
-                    return true;
-                }
-            } else if (key.contains(keyword)) {
+        for (String keyword : LONG_KEYWORDS) {
+            if (key.contains(keyword)) {
                 return true;
             }
         }
-        return false;
+        for (String keyword : SHORT_KEYWORDS) {
+            // 两侧不得紧邻字母：避免 pay/charge/dache 等短词被任意编码串夹带误命中
+            if (Pattern.compile("(?<![a-z])" + keyword + "(?![a-z])").matcher(key).find()) {
+                return true;
+            }
+        }
+        // 游戏内充值：game_cz 明确，或 _cz 后跟数字（裸 _cz 结尾不算，避免误伤含 cz 的普通任务）
+        return key.contains("game_cz") || CZ_AMOUNT.matcher(key).find();
     }
 
     /** 日志出口（{@code Log.farm/forest/other/goldenBeans}）。 */
@@ -65,7 +103,7 @@ public final class TaskAlternative {
     /** 唯一的 doFarmTask payload，返回原始响应。 */
     public static String request(String bizKey, String taskSceneCode, String version) {
         if (isTransactionTask(bizKey)) {
-            Log.i("doFarmTask⏭️跳过交易/履约类任务#bizKey=" + bizKey + "，不自动申报");
+            Log.i("⏭️跳过交易/履约类任务#bizKey=" + bizKey + "，不自动申报");
             return "{}";
         }
         String args = "[{\"bizKey\":\"" + bizKey + "\",\"requestType\":\"RPC\",\"sceneCode\":\"ANTFARM\","
@@ -113,13 +151,18 @@ public final class TaskAlternative {
         try {
             if (isTransactionTask(bizKey)) {
                 Log.i(logPrefix + "⏭️跳过[" + taskTitle + "]#bizKey=" + bizKey + "，交易/履约类不自动申报");
+                // 跳过 = 该任务不会完成：同样登记进同轮核对，由调用方的核对机制把它拉黑。
+                // 否则只跳过、不拉黑，任务每天被反复跳过（会员游戏中心/金豆夺宝走的就是这条路）。
+                if (pending != null && taskId != null && !taskId.isEmpty()) {
+                    pending.put(taskId, taskTitle);
+                }
                 return null;
             }
             JSONObject doFarmJo = doFarmTask(bizKey, taskSceneCode, version);
             if (pending != null && taskId != null && !taskId.isEmpty()) {
                 pending.put(taskId, taskTitle);
             }
-            String message = logPrefix + "🕓已触发[" + taskTitle + "]#doFarmTask=" + describe(doFarmJo)
+            String message = logPrefix + "🕓已触发[" + taskTitle + "]#响应=" + describe(doFarmJo)
                     + "，结果以任务列表为准";
             if (sink != null) {
                 sink.log(message);
@@ -184,11 +227,11 @@ public final class TaskAlternative {
                 String key = item.getKey();
                 String title = item.getValue();
                 if (stillTodo.contains(key)) {
-                    cfg.sink.log(cfg.logPrefix + "⚠️未完成[" + title + "]#doFarmTask 未生效，已交给自动拉黑机制");
+                    cfg.sink.log(cfg.logPrefix + "⚠️未完成[" + title + "]，已交给自动拉黑机制");
                     MessageUtil.MarkTaskBlackList(cfg.moduleName, cfg.taskListField, cfg.listDisplay,
                             cfg.blacklistByTitle ? title : key);
                 } else {
-                    cfg.sink.log(cfg.logPrefix + cfg.doneTag + "[" + title + "]#doFarmTask（已按任务列表核对）");
+                    cfg.sink.log(cfg.logPrefix + cfg.doneTag + "[" + title + "]（已按任务列表核对）");
                     changed = true;
                 }
             }

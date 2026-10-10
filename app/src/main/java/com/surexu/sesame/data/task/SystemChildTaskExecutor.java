@@ -32,7 +32,6 @@ public class SystemChildTaskExecutor implements ChildTaskExecutor {
                     return;
                 }
                 //String modelTaskId = getName();
-                //Log.i("任务模块:" + modelTaskId + " 添加子任务:" + id);
                 Future<?> future = threadPoolExecutor.submit(() -> {
                     try {
                         long delay = childTask.getExecTime() - System.currentTimeMillis();
@@ -40,17 +39,14 @@ public class SystemChildTaskExecutor implements ChildTaskExecutor {
                             try {
                                 Thread.sleep(delay);
                             } catch (Exception e) {
-                                //Log.record("任务模块:" + modelTaskId + " 中断子任务:" + id);
                                 return;
                             }
                         }
                         childTask.run();
                     } catch (Exception e) {
                         Log.printStackTrace(e);
-                        //Log.record("任务模块:" + modelTaskId + " 异常子任务:" + id);
                     } finally {
                         childTask.getModelTask().removeChildTask(childTask.getId());
-                        //Log.i("任务模块:" + modelTaskId + " 移除子任务:" + id);
                     }
                 });
                 childTask.setCancelTask(() -> future.cancel(true));
@@ -65,15 +61,12 @@ public class SystemChildTaskExecutor implements ChildTaskExecutor {
             }
         } else {
             Future<?> future = threadPoolExecutor.submit(() -> {
-                //Log.i("任务模块:" + modelTaskId + " 添加子任务:" + id);
                 try {
                     childTask.run();
                 } catch (Exception e) {
                     Log.printStackTrace(e);
-                    //Log.record("任务模块:" + getName() + " 异常子任务:" + childTask.getId());
                 } finally {
                     childTask.getModelTask().removeChildTask(childTask.getId());
-                    //Log.i("任务模块:" + modelTaskId + " 移除子任务:" + id);
                 }
             });
             childTask.setCancelTask(() -> future.cancel(true));

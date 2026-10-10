@@ -16,7 +16,6 @@ public class ServerCommon {
         // 去掉KotlinModule注册，直接初始化ObjectMapper
         jsonMapper = new ObjectMapper();
         // 可选：添加Java常用的配置（比如忽略未知字段）
-        // jsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
     
     private ServerCommon() {

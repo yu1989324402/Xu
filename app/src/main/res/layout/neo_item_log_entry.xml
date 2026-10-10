@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 日志条目卡片：Tag + 时间 + 复制按钮 + 正文（仿模块版 LogEntryCard，拟态轻卡样式） -->
+<!-- 日志条目卡片：Tag + 时间 + 复制按钮 + 正文（统一全局卡片：纯色圆角 + 完整包裹描边） -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
-    android:background="@drawable/neu_log_entry_bg"
+    android:background="@drawable/neu_card_raised"
     android:orientation="vertical"
     android:paddingHorizontal="14dp"
     android:paddingVertical="12dp">

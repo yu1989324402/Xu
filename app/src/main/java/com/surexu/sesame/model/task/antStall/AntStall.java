@@ -242,7 +242,6 @@ public class AntStall extends ModelTask {
             //初始化AntStallTaskListMap
             AntStallTaskListMap.load();
             Set<String> blackList = new HashSet<>();
-            //blackList.add("到店付款");
             Set<String> whiteList = new HashSet<>();// 从黑名单中移除该任务
             //whiteList.add("逛一逛树");
             for (String task : blackList) {

@@ -78,8 +78,6 @@ public class AuthCodeHelper {
             appExtInfo.put("channel", "tinyapp");
             appExtInfo.put("clientAppId", appId);
             XHelpers.callMethod(authSkipRequestModel, "setAppExtInfo", appExtInfo);
-
-            //Log.other("getAuthCode 请求体 -> " + authSkipRequestModel.toString());
             // 4. 调用 getAuthSkipResult 方法获取授权结果
             Object authSkipResult = XHelpers.callMethod(
                     oauth2AuthCodeServiceImpl,
@@ -91,12 +89,9 @@ public class AuthCodeHelper {
             
             // 5. 解析返回结果中的授权码
             if (authSkipResult != null) {
-                //Log.other("getAuthCode 响应 -> " + authSkipResult.toString());
                 Object authExecuteResult = XHelpers.callMethod(authSkipResult, "getAuthExecuteResult");
                 if (authExecuteResult != null) {
-                //    Log.other("getAuthCode authExecuteResult -> " + authExecuteResult.toString());
                     Object authCodeObj = XHelpers.callMethod(authExecuteResult, "getAuthCode");
-                //    Log.other("getAuthCode authCode -> " + (authCodeObj != null ? authCodeObj : "null"));
                     return authCodeObj instanceof String ? (String) authCodeObj : null;
                 }
             }

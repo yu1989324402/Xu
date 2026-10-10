@@ -7,6 +7,7 @@
     <!-- 基色 / 光照 -->
     <color name="neo_base">#F6F9FE</color>
     <color name="neo_card">#FDFEFF</color>
+    <color name="neo_card_edge">#D7E2F2</color>
     <color name="neo_highlight">#FFFFFF</color>
     <color name="neo_bubble_ai">#E9EEF7</color>
 
@@ -18,10 +19,10 @@
     <color name="neo_pressed">#EEF3FB</color>
     <color name="neo_pressed_edge">#D7E2F2</color>
 
-    <!-- 主色：霓虹青 -->
-    <color name="neo_primary">#00B3A4</color>
-    <color name="neo_primary_deep">#009688</color>
-    <color name="neo_primary_soft">#DFF7F4</color>
+    <!-- 主色：对齐截图蓝色系 -->
+    <color name="neo_primary">#2E6BFF</color>
+    <color name="neo_primary_deep">#1B5BF0</color>
+    <color name="neo_primary_soft">#E3ECFF</color>
 
     <!-- 辅色：电光紫 -->
     <color name="neo_secondary">#7C6CFF</color>
@@ -39,4 +40,34 @@
 
     <!-- 危险 -->
     <color name="neo_error">#E5484D</color>
+
+    <!-- 蓝色强调：能量统计列标题 / 底部导航选中态 -->
+    <color name="neo_blue">#2E6BFF</color>
+
+    <!-- 悬浮胶囊底栏：半透明白毛玻璃 + 淡蓝描边 -->
+    <color name="neo_nav_float_bg">#F2FFFFFF</color>
+    <color name="neo_nav_float_edge">#C9D8F5</color>
+
+    <!-- 导航选中项高亮块：半透明白 + 淡蓝描边 -->
+    <color name="neo_nav_item_selected">#B3FFFFFF</color>
+    <color name="neo_nav_item_selected_edge">#99C6E8FF</color>
+
+    <!-- 拟态光影：凸起卡片右下软影 / 左上高光 -->
+    <color name="neo_shadow_soft">#3C8398BD</color>
+    <color name="neo_shadow_outer">#148398BD</color>
+    <color name="neo_highlight_soft">#59FFFFFF</color>
+
+    <!-- 功能页分类图标渐变（统一对齐蓝色系，深浅区分分类） -->
+    <color name="neo_feat_base_start">#2E6BFF</color>
+    <color name="neo_feat_base_end">#1B5BF0</color>
+    <color name="neo_feat_forest_start">#34CFE4</color>
+    <color name="neo_feat_forest_end">#0EA8CE</color>
+    <color name="neo_feat_farm_start">#5B7BFF</color>
+    <color name="neo_feat_farm_end">#3858EE</color>
+    <color name="neo_feat_village_start">#5AC8FA</color>
+    <color name="neo_feat_village_end">#2E9EF4</color>
+    <color name="neo_feat_sport_start">#7A8CFF</color>
+    <color name="neo_feat_sport_end">#5766F0</color>
+    <color name="neo_feat_other_start">#9AA9C0</color>
+    <color name="neo_feat_other_end">#74849E</color>
 </resources>

@@ -1,40 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 原创拟态·凸起卡片：右下柔影 + 高光描边，像从背景里"长出来" -->
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- 阴影层：向右下偏移露出柔影 -->
-    <item
-        android:left="0dp"
-        android:top="0dp"
-        android:right="5dp"
-        android:bottom="7dp">
-        <shape android:shape="rectangle">
-            <solid android:color="@color/neo_shadow" />
-            <corners android:radius="24dp" />
-        </shape>
-    </item>
-    <!-- 高光过渡层：略深一档，增加体积感 -->
-    <item
-        android:left="1dp"
-        android:top="1dp"
-        android:right="4dp"
-        android:bottom="6dp">
-        <shape android:shape="rectangle">
-            <solid android:color="@color/neo_shadow_deep" />
-            <corners android:radius="23dp" />
-        </shape>
-    </item>
-    <!-- 基色层：左上高光描边 -->
-    <item
-        android:left="1dp"
-        android:top="1dp"
-        android:right="1dp"
-        android:bottom="1dp">
-        <shape android:shape="rectangle">
-            <solid android:color="@color/neo_card" />
-            <corners android:radius="23dp" />
-            <stroke
-                android:width="1dp"
-                android:color="@color/neo_highlight" />
-        </shape>
-    </item>
-</layer-list>
+<!-- 原创拟态·凸起卡片：纯色圆角 + 完整包裹描边（四周一致，无阴影无高光） -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="24dp" />
+    <solid android:color="@color/neo_card" />
+    <stroke
+        android:width="1dp"
+        android:color="@color/neo_card_edge" />
+</shape>

@@ -5,7 +5,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.ViewGroup
@@ -105,7 +108,7 @@ class NeoSystemActivity : AppCompatActivity() {
         // 悬浮底栏：底部导航悬浮胶囊
         addRow(
             container, marginPx, "悬浮底栏", "底部导航栏悬浮胶囊样式", withSwitch = true,
-            checked = uiPrefs.getBoolean(KEY_UI_FLOAT_NAV, false),
+            checked = uiPrefs.getBoolean(KEY_UI_FLOAT_NAV, true),
             onChanged = { checked ->
                 uiPrefs.edit().putBoolean(KEY_UI_FLOAT_NAV, checked).apply()
             }
@@ -349,10 +352,23 @@ class NeoSystemActivity : AppCompatActivity() {
         renderRows()
     }
 
+    /** 触感反馈：开关开启时振动（优先 Vibrator 直振，失败回退系统反馈）。 */
     private fun haptic(view: View) {
-        if (uiPrefs.getBoolean(KEY_UI_HAPTIC, false)) {
-            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+        if (!uiPrefs.getBoolean(KEY_UI_HAPTIC, false)) return
+        try {
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+            if (vibrator != null && vibrator.hasVibrator()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(25, 160))
+                } else {
+                    vibrator.vibrate(25)
+                }
+                return
+            }
+        } catch (_: Exception) {
+            // 无 VIBRATE 权限等异常时回退系统反馈
         }
+        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
     }
 
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()

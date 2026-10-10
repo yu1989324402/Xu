@@ -173,8 +173,6 @@ public class Status {
         INSTANCE.wateredFriendLogList.put(id, count + 1);
         save();
     }
-    //Log.forest("统计被水🍯
-    //Log.forest("统计浇水🚿
     public static synchronized void getWateredFriendToday() {
         // 1. 基础统计：浇水好友数量（Map的key数量）
         int friendCount = INSTANCE.wateredFriendLogList.size();

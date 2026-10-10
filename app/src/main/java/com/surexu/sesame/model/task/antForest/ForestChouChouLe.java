@@ -125,7 +125,6 @@ public class ForestChouChouLe {
                                 String p2pSceneCode = prodPlayParam.getString("p2pSceneCode");
                                 Log.forest("森林寻宝🎰️执行[" + drawScenename + "]助力好友");
                                 DoForestHuntHelp(shareIds, activityId, p2pSceneCode, taskType);
-                                // Status.flagToday("Forest::" + sceneCode,taskUid);
                             }
                         }
                         // 在最后一个任务时强制开启助力
@@ -136,7 +135,6 @@ public class ForestChouChouLe {
                                     // if (!Status.hasFlagToday("Forest::" + sceneCode)) {
                                     Log.forest("森林寻宝🎰️执行[普通场景]助力好友(薅羊毛，如果助力结果不返回成功请关闭配置项)");
                                     DoForestHuntHelp(shareIds, activityId, "FOREST_NORMAL_20250829_SHARE", "FOREST_NORMAL_DRAW_SHARE");
-                                    // Status.flagToday("Forest::" + sceneCode,taskUid);
                                 }
                             }
                             if (ACTIVITYForestHuntHelp && sceneCode.equals("ANTFOREST_ACTIVITY_DRAW")) {
@@ -145,7 +143,6 @@ public class ForestChouChouLe {
                                     // if (!Status.hasFlagToday("Forest::" + sceneCode)) {
                                     Log.forest("森林寻宝🎰️执行[活动场景]助力好友(薅羊毛，如果助力结果不返回成功请关闭配置项)");
                                     DoForestHuntHelp(shareIds, activityId, "FOREST_NORMAL_20251024_SHARE", "FOREST_ACTIVITY_DRAW_SHARE");
-                                    // Status.flagToday("Forest::" + sceneCode,taskUid);
                                 }
                             }
                         }
@@ -267,7 +264,6 @@ public class ForestChouChouLe {
                     continue;
                 }
                 String userId = shareComponentRecall(p2pSceneCode, shareId);
-                // Log.forest("森林寻宝🎰️尝试助力#" + ForestHuntIdMap.get(shareUserId));
                 if (userId.equals("解析userID失败")) {
                     continue;
                 }
@@ -283,7 +279,6 @@ public class ForestChouChouLe {
                 Log.forest("森林寻宝👊助力[" + userName + "]" + resconfirmShareRecall);
                 // 标记助力成功
                 Status.flagToday(taskType + "::" + shareUserId, taskUid);
-                // Status.ForestHuntHelpToday(taskType + "::" + shareUserId, taskUid);
                 forestHuntHelpTodayCount++;
                 // 统计场景助力次数
                 Status.forestHuntHelpToday(taskType, forestHuntHelpTodayCount, taskUid);
@@ -320,7 +315,7 @@ public class ForestChouChouLe {
                         "森林寻宝", msg -> Log.forest(msg));
                 return true;
             }
-            Log.other("森林寻宝⚠️未完成[" + taskName + "]#taskType=" + taskType);
+            Log.other("森林寻宝⚠️未完成[" + taskName + "]");
         } catch (Throwable t) {
             Log.err(TAG, "chouChouLeFinishTask err:", t);
         }

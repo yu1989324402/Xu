@@ -1,17 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 功能页分类图标：灰蓝渐变 + 底部内阴影 + 左上高光 + 白描边 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:width="44dp" android:height="44dp">
-        <shape android:shape="rectangle">
-            <corners android:radius="13dp" />
-            <gradient
+        <shape android:shape="oval">            <gradient
                 android:angle="135"
-                android:startColor="#6E84AC"
-                android:endColor="#54657D" />
+                android:startColor="@color/neo_feat_other_start"
+                android:endColor="@color/neo_feat_other_end" />
+        </shape>
+    </item>
+    <item android:width="44dp" android:height="44dp">
+        <shape android:shape="oval">            <gradient
+                android:angle="90"
+                android:startColor="#00000000"
+                android:endColor="#33000000" />
+        </shape>
+    </item>
+    <item android:width="44dp" android:height="44dp">
+        <shape android:shape="oval">            <gradient
+                android:angle="90"
+                android:startColor="#59FFFFFF"
+                android:centerColor="#12FFFFFF"
+                android:endColor="#00FFFFFF" />
+        </shape>
+    </item>
+    <item android:width="44dp" android:height="44dp">
+        <shape android:shape="oval">            <stroke
+                android:width="1dp"
+                android:color="#3DFFFFFF" />
         </shape>
     </item>
     <item
         android:gravity="center"
-        android:width="26dp"
-        android:height="26dp"
+        android:width="28dp"
+        android:height="28dp"
         android:drawable="@drawable/ic_neo_feat_other_white" />
 </layer-list>

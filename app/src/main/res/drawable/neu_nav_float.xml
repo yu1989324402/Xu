@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 悬浮胶囊底栏背景：半透明毛玻璃 + 柔光阴影 + 淡蓝描边，两端大圆角呈胶囊 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 柔影层：向下轻浮 -->
+    <item
+        android:left="1dp"
+        android:top="2dp"
+        android:right="6dp"
+        android:bottom="9dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/neo_shadow" />
+            <corners android:radius="34dp" />
+        </shape>
+    </item>
+    <!-- 高光过渡层 -->
+    <item
+        android:left="1dp"
+        android:top="1dp"
+        android:right="3dp"
+        android:bottom="4dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/neo_shadow_deep" />
+            <corners android:radius="32dp" />
+        </shape>
+    </item>
+    <!-- 半透明胶囊主体 -->
+    <item
+        android:left="1dp"
+        android:top="1dp"
+        android:right="1dp"
+        android:bottom="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/neo_nav_float_bg" />
+            <corners android:radius="31dp" />
+            <stroke
+                android:width="1dp"
+                android:color="@color/neo_nav_float_edge" />
+        </shape>
+    </item>
+</layer-list>

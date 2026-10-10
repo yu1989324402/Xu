@@ -292,7 +292,6 @@ public class WhackMole {
             }
             
             String token = startResp.optString("token");
-            //Toast.show("打地鼠 第" + round + "局启动\nToken: " + token);
             return new GameSession(token, round);
         } catch (Exception e) {
             Log.printStackTrace("启动第" + round + "局异常:", e);

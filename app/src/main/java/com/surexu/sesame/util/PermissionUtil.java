@@ -54,7 +54,6 @@ public class PermissionUtil {
                 Intent appIntent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                 appIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 appIntent.setData(Uri.parse("package:" + activity.getPackageName()));
-                //appIntent.setData(Uri.fromParts("package", activity.getPackageName(), null));
                 try {
                     activity.startActivity(appIntent);
                 } catch (ActivityNotFoundException ex) {
@@ -108,7 +107,6 @@ public class PermissionUtil {
                 appIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 appIntent.setData(Uri.parse("package:" + ClassUtil.PACKAGE_NAME));
-                //appIntent.setData(Uri.fromParts("package", ClassUtil.PACKAGE_NAME, null));
                 try {
                     context.startActivity(appIntent);
                 } catch (ActivityNotFoundException ex) {
