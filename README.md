@@ -134,3 +134,4 @@ keyPassword=你的口令
 本仓库是上游项目 [aw1y2z/Sesame-M](https://github.com/aw1y2z/Sesame-M)（GPL-3.0）的**修改版本（modified version）**，在其源码基础上完成包名与应用名迁移、界面重构（未来拟态纯白 UI）、任务模块增删与接口适配等修改，修改自 2025 年起持续进行，具体修改内容以本仓库的提交历史为准。
 
 依据 GPL-3.0：本修改版本同样以 GPL-3.0 发布，保留上游版权声明与许可证原文（见 [LICENSE](LICENSE) 与 [licenses/](licenses/)），并在此显著声明本作品已被修改。任何再分发者需一并遵守上述许可条款。
+
