@@ -36,6 +36,11 @@ public class GreenFinance extends ModelTask {
      */
     private BooleanModelField greenFinancePointFriend;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "经营";
@@ -49,13 +54,13 @@ public class GreenFinance extends ModelTask {
     @Override
     public ModelFields getFields() {
         ModelFields modelFields = new ModelFields();
-        modelFields.addField(greenFinanceLsxd = new BooleanModelField("greenFinanceLsxd", "打卡 | 绿色行动", false));
-        modelFields.addField(greenFinanceLscg = new BooleanModelField("greenFinanceLscg", "打卡 | 绿色采购", false));
-        modelFields.addField(greenFinanceLsbg = new BooleanModelField("greenFinanceLsbg", "打卡 | 绿色办公", false));
-        modelFields.addField(greenFinanceWdxd = new BooleanModelField("greenFinanceWdxd", "打卡 | 绿色销售", false));
-        modelFields.addField(greenFinanceLswl = new BooleanModelField("greenFinanceLswl", "打卡 | 绿色物流", false));
-        modelFields.addField(greenFinancePointFriend = new BooleanModelField("greenFinancePointFriend", "收取 | 好友金币", false));
-        modelFields.addField(greenFinanceDonation = new BooleanModelField("greenFinanceDonation", "捐助 | 快过期金币", false));
+        modelFields.addField(greenFinanceLsxd = new BooleanModelField("greenFinanceLsxd", "打卡 | 绿色行动",true));
+        modelFields.addField(greenFinanceLscg = new BooleanModelField("greenFinanceLscg", "打卡 | 绿色采购",true));
+        modelFields.addField(greenFinanceLsbg = new BooleanModelField("greenFinanceLsbg", "打卡 | 绿色办公",true));
+        modelFields.addField(greenFinanceWdxd = new BooleanModelField("greenFinanceWdxd", "打卡 | 绿色销售",true));
+        modelFields.addField(greenFinanceLswl = new BooleanModelField("greenFinanceLswl", "打卡 | 绿色物流",true));
+        modelFields.addField(greenFinancePointFriend = new BooleanModelField("greenFinancePointFriend", "收取 | 好友金币",true));
+        modelFields.addField(greenFinanceDonation = new BooleanModelField("greenFinanceDonation", "捐助 | 快过期金币",true));
         return modelFields;
     }
 

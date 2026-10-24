@@ -38,6 +38,11 @@ public class AntAnimalGuess extends ModelTask {
 
     private BooleanModelField animalGuess;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return DISPLAY_NAME;
@@ -51,7 +56,7 @@ public class AntAnimalGuess extends ModelTask {
     @Override
     public ModelFields getFields() {
         ModelFields modelFields = new ModelFields();
-        modelFields.addField(animalGuess = new BooleanModelField("animalGuess", "动物竞猜 | 自动签到", false));
+        modelFields.addField(animalGuess = new BooleanModelField("animalGuess", "动物竞猜 | 自动签到",true));
         return modelFields;
     }
 

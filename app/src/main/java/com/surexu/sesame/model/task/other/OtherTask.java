@@ -15,6 +15,11 @@ public class OtherTask extends ModelTask {
     private static final String TAG = "OtherTask";
     private BooleanModelField haojiaWuyou;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "其他任务";
@@ -28,7 +33,7 @@ public class OtherTask extends ModelTask {
     @Override
     public ModelFields getFields() {
         ModelFields modelFields = new ModelFields();
-        BooleanModelField booleanModelField2 = new BooleanModelField("haojiaWuyou", "好家无忧卡", false);
+        BooleanModelField booleanModelField2 = new BooleanModelField("haojiaWuyou", "好家无忧卡",true);
         this.haojiaWuyou = booleanModelField2;
         modelFields.addField(booleanModelField2);
         return modelFields;

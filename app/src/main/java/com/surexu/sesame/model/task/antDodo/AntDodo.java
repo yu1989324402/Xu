@@ -39,6 +39,11 @@ public class AntDodo extends ModelTask {
     /** 刮卡请求间隔：沿用实测脚本值(≥500ms，防服务端风控) */
     private static final long SCRATCH_CARD_INTERVAL_MS = 800L;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "物种";
@@ -75,10 +80,10 @@ public class AntDodo extends ModelTask {
     @Override
     public ModelFields getFields() {
         ModelFields modelFields = new ModelFields();
-        modelFields.addField(dodoTaskList = new BooleanModelField("dodoTaskList", "物种任务", false));
+        modelFields.addField(dodoTaskList = new BooleanModelField("dodoTaskList", "物种任务",true));
         modelFields.addField(AutoAntDodoTaskList = new BooleanModelField("AutoAntDodoTaskList", "物种任务 | 自动黑名单", true).setDependsOn("dodoTaskList"));
         modelFields.addField(AntDodoTaskList = new SelectModelField("AntDodoTaskList", "物种任务 | 黑名单列表", new LinkedHashSet<>(), AlipayAntDodoTaskList::getList).setDependsOn("AutoAntDodoTaskList"));
-        modelFields.addField(useProp = new BooleanModelField("useProp", "使用道具 | 开启", false));
+        modelFields.addField(useProp = new BooleanModelField("useProp", "使用道具 | 开启",true));
         modelFields.addField(usePropList = new SelectModelField("usePropList", "使用道具 | 道具列表", new LinkedHashSet<>(), CustomOption::getAntDodoPropList).setDependsOn("useProp"));
         modelFields.addField(useCollectTimingType = new ChoiceModelField("useCollectTimingType", "抽卡道具 | 使用时机", TimingType.EVERY_DAY, TimingType.nickNames).setDependsOn("useProp"));
         modelFields.addField(useUniversalCardBookStatusType = new ChoiceModelField("useUniversalCardBookStatusType", "万能卡片 | 图鉴状态类型", BookStatusType.END, BookStatusType.nickNames).setDependsOn("useProp"));
@@ -86,11 +91,11 @@ public class AntDodo extends ModelTask {
         modelFields.addField(useUniversalCardBookCollectedhasCollected = new BooleanModelField("useUniversalCardBookCollectedhasCollected", "万能卡片 | 优先兑换未获得状态卡片", false).setDependsOn("useProp"));
         modelFields.addField(useUniversalCardMedalGenerationStatusType = new ChoiceModelField("useUniversalCardMedalGenerationStatusType", "万能卡片 | 勋章合成状态", MedalGenerationStatusType.ALL, MedalGenerationStatusType.nickNames).setDependsOn("useProp"));
         modelFields.addField(useUniversalCardFantasticLevelType = new ChoiceModelField("useUniversalCardFantasticLevelType", "万能卡片 | 最低等级", FantasticLevelType.MAGIC, FantasticLevelType.nickNames).setDependsOn("useProp"));
-        modelFields.addField(bookMedal = new BooleanModelField("bookMedal", "图鉴勋章 | 开启", false));
+        modelFields.addField(bookMedal = new BooleanModelField("bookMedal", "图鉴勋章 | 开启",true));
         modelFields.addField(bookMedalOptions = new SelectModelField("bookMedalOptions", "图鉴勋章 | 选项", new LinkedHashSet<>(), CustomOption::getAntDodoBookMedalOptions).setDependsOn("bookMedal"));
         modelFields.addField(collectToFriendType = new ChoiceModelField("collectToFriendType", "帮抽卡片 | 动作", CollectToFriendType.NONE, CollectToFriendType.nickNames));
         modelFields.addField(collectToFriendList = new SelectModelField("collectToFriendList", "帮抽卡片 | 好友列表", new LinkedHashSet<>(), AlipayUser::getList).setDependsOn("collectToFriendType"));
-        modelFields.addField(giftToFriend = new BooleanModelField("giftToFriend", "赠送卡片 | 开启", false));
+        modelFields.addField(giftToFriend = new BooleanModelField("giftToFriend", "赠送卡片 | 开启",true));
         modelFields.addField(giftToFriendBookStatusType = new ChoiceModelField("giftToFriendBookStatusType", "赠送卡片 | " + "图鉴状态类型", BookStatusType.ALL, BookStatusType.nickNames).setDependsOn("giftToFriend"));
         modelFields.addField(giftToFriendBookCollectedStatusType = new ChoiceModelField("giftToFriendBookCollectedStatusType", "赠送卡片 | 图鉴收集状态", BookCollectedStatusType.ALL, BookCollectedStatusType.nickNames).setDependsOn("giftToFriend"));
         modelFields.addField(giftToFriendMedalGenerationStatusType = new ChoiceModelField("giftToFriendMedalGenerationStatusType", "赠送卡片 | 勋章合成状态", MedalGenerationStatusType.ALL, MedalGenerationStatusType.nickNames).setDependsOn("giftToFriend"));

@@ -16,6 +16,11 @@ public final class DailyCash extends IsolatedRewardTask {
     private BooleanModelField checkIn;
     private BooleanModelField receiveCash;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "天天赚现金";
@@ -23,10 +28,10 @@ public final class DailyCash extends IsolatedRewardTask {
 
     @Override
     protected void addFields(ModelFields modelFields) {
-        BooleanModelField booleanModelField = new BooleanModelField("checkIn", "每日签到", false);
+        BooleanModelField booleanModelField = new BooleanModelField("checkIn", "每日签到",true);
         this.checkIn = booleanModelField;
         modelFields.addField(booleanModelField);
-        BooleanModelField booleanModelField2 = new BooleanModelField("receiveCash", "累计满5元领取(每日最多一次)", false);
+        BooleanModelField booleanModelField2 = new BooleanModelField("receiveCash", "累计满5元领取(每日最多一次)",true);
         this.receiveCash = booleanModelField2;
         modelFields.addField(booleanModelField2);
     }

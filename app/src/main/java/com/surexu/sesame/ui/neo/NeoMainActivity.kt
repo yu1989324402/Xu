@@ -44,6 +44,7 @@ import com.surexu.sesame.R
 import com.surexu.sesame.util.PermissionUtil
 import com.surexu.sesame.data.AppConfig
 import com.surexu.sesame.data.ConfigV2
+import com.surexu.sesame.data.Model
 import com.surexu.sesame.data.ModelGroup
 import com.surexu.sesame.data.RunType
 import com.surexu.sesame.data.ViewAppInfo
@@ -340,6 +341,14 @@ class NeoMainActivity : AppCompatActivity() {
         val width = (resources.displayMetrics.widthPixels - (64 * resources.displayMetrics.density).toInt())
         dialog.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
 
+        dialog.findViewById<View>(R.id.neo_dialog_enable_all).setOnClickListener {
+            dialog.dismiss()
+            setAllModelsEnabled(true)
+        }
+        dialog.findViewById<View>(R.id.neo_dialog_disable_all).setOnClickListener {
+            dialog.dismiss()
+            setAllModelsEnabled(false)
+        }
         dialog.findViewById<View>(R.id.neo_dialog_default).setOnClickListener {
             dialog.dismiss()
             restoreDefaultConfig()
@@ -354,19 +363,63 @@ class NeoMainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    /** 恢复默认配置：删除配置与备份后重建出厂默认，并通知支付宝进程重载。 */
+    /**
+     * 一键开启/关闭全部功能：批量改每个模型的 enable 总开关后落盘，并通知支付宝进程重载，
+     * 免去重装后逐个手点的麻烦（只是改总开关，不动各功能内部的子参数）。
+     */
+    private fun setAllModelsEnabled(enabled: Boolean) {
+        try {
+            val userId = restoreSelectedAccount()
+            // ConfigV2 的 isInit/getModelFieldsMap 是包内可见，UI 进程这边走公开入口
+            Model.initAllModel()
+            ConfigV2.load(userId)
+            var n = 0
+            for (code in Model.getModelConfigMap().keys) {
+                val field = ConfigV2.INSTANCE.getModelFields(code)?.get("enable") ?: continue
+                field.setObjectValue(enabled)
+                n++
+            }
+            val saved = ConfigV2.save(userId, true)
+            // 通知支付宝进程内的模块重载，让开关立即生效
+            sendBroadcast(Intent("com.eg.android.AlipayGphone.sesame.restart"))
+            val verb = if (enabled) "开启" else "关闭"
+            Toast.makeText(
+                this,
+                if (saved == true) "已${verb}全部 $n 个功能" else "${verb}失败：配置未保存",
+                Toast.LENGTH_SHORT
+            ).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "操作失败：" + (e.message ?: ""), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * 恢复默认值：把全部功能项的所有字段重置为代码默认值并保存。
+     * 不删配置文件、不删备份（旧的“删文件重建”做法会连带清掉账号维度配置与滚动备份），
+     * 需要彻底清掉时用下面的「清除配置」。
+     */
     private fun restoreDefaultConfig() {
         try {
             val userId = restoreSelectedAccount()
-            val file = if (StringUtil.isEmpty(userId)) FileUtil.getDefaultConfigV2File()
-            else FileUtil.getConfigV2File(userId!!)
-            if (file.exists()) file.delete()
-            ConfigV2.unload()
+            Model.initAllModel()
             ConfigV2.load(userId)
+            var n = 0
+            for (code in Model.getModelConfigMap().keys) {
+                val modelFields = ConfigV2.INSTANCE.getModelFields(code) ?: continue
+                for (field in modelFields.values) {
+                    field.reset()
+                    n++
+                }
+            }
+            val saved = ConfigV2.save(userId, true)
             sendBroadcast(Intent("com.eg.android.AlipayGphone.sesame.restart"))
-            Toast.makeText(this, "已恢复默认配置", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                if (saved == true) "已恢复默认值（$n 项）" else "恢复失败：配置未保存",
+                Toast.LENGTH_SHORT
+            ).show()
         } catch (e: Exception) {
-            Toast.makeText(this, "恢复默认配置失败", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "恢复默认值失败：" + (e.message ?: ""), Toast.LENGTH_SHORT).show()
         }
     }
 

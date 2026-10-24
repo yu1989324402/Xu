@@ -60,6 +60,11 @@ public class AntStall extends ModelTask {
         taskTypeList.add("ANTSTALL_TASK_nongchangleyuan");
     }
     
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+    
     @Override
     public String getName() {
         return "新村";
@@ -102,28 +107,28 @@ public class AntStall extends ModelTask {
         ModelFields modelFields = new ModelFields();
         modelFields.addField(openShopType = new ChoiceModelField("openShopType", "摆摊 | 动作", OpenShopType.NONE, OpenShopType.nickNames));
         modelFields.addField(openShopList = new SelectModelField("openShopList", "摆摊 | 好友列表", new LinkedHashSet<>(), AlipayUser::getList).setDependsOn("openShopType"));
-        modelFields.addField(closeShop = new BooleanModelField("closeShop", "收摊 | 开启", false));
+        modelFields.addField(closeShop = new BooleanModelField("closeShop", "收摊 | 开启",true));
         modelFields.addField(closeShopTime = new IntegerModelField("closeShopTime", "收摊 | 摆摊时长(分钟)", 120, 1, 1440).setDependsOn("closeShop"));
         modelFields.addField(pasteTicketType = new ChoiceModelField("pasteTicketType", "贴罚单 | 动作", PasteTicketType.NONE, PasteTicketType.nickNames));
         modelFields.addField(pasteTicketList = new SelectModelField("pasteTicketList", "贴罚单 | 好友列表", new LinkedHashSet<>(), AlipayUser::getList).setDependsOn("pasteTicketType"));
         modelFields.addField(throwManureType = new ChoiceModelField("throwManureType", "丢肥料 | 动作", ThrowManureType.NONE, ThrowManureType.nickNames));
         modelFields.addField(throwManureList = new SelectModelField("throwManureList", "丢肥料 | 好友列表", new LinkedHashSet<>(), AlipayUser::getList).setDependsOn("throwManureType"));
-        modelFields.addField(manualCollectManure = new BooleanModelField("manualCollectManure", "收肥料 | 手动收取", false));
-        modelFields.addField(sendBackShop = new BooleanModelField("sendBackShop", "请走小摊 | 开启", false));
+        modelFields.addField(manualCollectManure = new BooleanModelField("manualCollectManure", "收肥料 | 手动收取",true));
+        modelFields.addField(sendBackShop = new BooleanModelField("sendBackShop", "请走小摊 | 开启",true));
         modelFields.addField(sendBackShopTime = new IntegerModelField("sendBackShopTime", "请走小摊 | 允许摆摊时长(分钟)", 121).setDependsOn("sendBackShop"));
         modelFields.addField(sendBackShopWhiteList = new SelectModelField("sendBackShopWhiteList", "请走小摊 | 白名单(超时也不赶)", new LinkedHashSet<>(), AlipayUser::getList).setDependsOn("sendBackShop"));
         modelFields.addField(sendBackShopBlackList = new SelectModelField("sendBackShopBlackList", "请走小摊 | 黑名单(不超时也赶)", new LinkedHashSet<>(), AlipayUser::getList).setDependsOn("sendBackShop"));
         modelFields.addField(inviteOpenShopType = new ChoiceModelField("inviteOpenShopType", "邀请摆摊 | 动作", InviteOpenShopType.NONE, InviteOpenShopType.nickNames));
         modelFields.addField(inviteOpenShopList = new SelectModelField("inviteOpenShopList", "邀请摆摊 | 好友列表", new LinkedHashSet<>(), AlipayUser::getList).setDependsOn("inviteOpenShopType"));
-        modelFields.addField(taskList = new BooleanModelField("taskList", "新村任务 | 加速产币", false));
+        modelFields.addField(taskList = new BooleanModelField("taskList", "新村任务 | 加速产币",true));
         modelFields.addField(AutoAntStallTaskList = new BooleanModelField("AutoAntStallTaskList", "新村任务 | 自动黑名单", true).setDependsOn("taskList"));
         modelFields.addField(AntStallTaskList = new SelectModelField("AntStallTaskList", "新村任务 | 黑名单列表", new LinkedHashSet<>(), AlipayAntStallTaskList::getList).setDependsOn("AutoAntStallTaskList"));
-        modelFields.addField(doTaskOnce = new BooleanModelField("doTaskOnce", "新村任务仅执行一次", false).setDependsOn("taskList"));
-        modelFields.addField(donate = new BooleanModelField("donate", "助力就业岗位", false));
-        modelFields.addField(nextVillage = new BooleanModelField("nextVillage", "解锁新村新店", false));
-        modelFields.addField(inviteRegister = new BooleanModelField("inviteRegister", "邀请开通 | 开启", false));
+        modelFields.addField(doTaskOnce = new BooleanModelField("doTaskOnce", "新村任务仅执行一次",true).setDependsOn("taskList"));
+        modelFields.addField(donate = new BooleanModelField("donate", "助力就业岗位",true));
+        modelFields.addField(nextVillage = new BooleanModelField("nextVillage", "解锁新村新店",true));
+        modelFields.addField(inviteRegister = new BooleanModelField("inviteRegister", "邀请开通 | 开启",true));
         modelFields.addField(inviteRegisterList = new SelectModelField("inviteRegisterList", "邀请开通 | 好友列表", new LinkedHashSet<>(), AlipayUser::getList).setDependsOn("inviteRegister"));
-        modelFields.addField(assistFriend = new BooleanModelField("assistFriend", "分享助力 | 开启", false));
+        modelFields.addField(assistFriend = new BooleanModelField("assistFriend", "分享助力 | 开启",true));
         modelFields.addField(assistFriendList = new SelectModelField("assistFriendList", "分享助力 | 好友列表", new LinkedHashSet<>(), AlipayUser::getList).setDependsOn("assistFriend"));
         return modelFields;
     }

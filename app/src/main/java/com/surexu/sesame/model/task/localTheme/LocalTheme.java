@@ -19,6 +19,11 @@ public final class LocalTheme extends ModelTask {
     private StringModelField operationId;
     private StringModelField themeId;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "本地主题替换";

@@ -78,6 +78,11 @@ public class SesameSports extends ModelTask {
         return ModelGroup.OTHER;
     }
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "体育游乐记";

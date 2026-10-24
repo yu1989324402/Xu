@@ -76,6 +76,11 @@ public class SesameDog extends ModelTask {
         return ModelGroup.OTHER;
     }
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "芝麻粒游乐记";

@@ -11,6 +11,11 @@ public final class PromoprodRewards extends IsolatedRewardTask {
     private BooleanModelField claimCompleted;
     private BooleanModelField inspect;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "实体红包任务";
@@ -18,10 +23,10 @@ public final class PromoprodRewards extends IsolatedRewardTask {
 
     @Override
     protected void addFields(ModelFields modelFields) {
-        BooleanModelField booleanModelField = new BooleanModelField("inspect", "查询任务状态", false);
+        BooleanModelField booleanModelField = new BooleanModelField("inspect", "查询任务状态",true);
         this.inspect = booleanModelField;
         modelFields.addField(booleanModelField);
-        BooleanModelField booleanModelField2 = new BooleanModelField("claimCompleted", "领取服务端已完成奖励", false);
+        BooleanModelField booleanModelField2 = new BooleanModelField("claimCompleted", "领取服务端已完成奖励",true);
         this.claimCompleted = booleanModelField2;
         modelFields.addField(booleanModelField2);
     }

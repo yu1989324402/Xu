@@ -33,6 +33,7 @@ import com.surexu.sesame.model.task.sesameDog.SesameDog;
 import com.surexu.sesame.model.task.sesameSports.SesameSports;
 import com.surexu.sesame.model.task.videoRewards.VideoRewards;
 import com.surexu.sesame.model.task.youthPrivilege.YouthPrivilege;
+import com.surexu.sesame.model.task.yueyuezhuan.YueYueZhuan;
 import lombok.Getter;
 
 public class ModelOrder {
@@ -68,6 +69,7 @@ public class ModelOrder {
         clazzList.add(LuckCardStatus.class);
         clazzList.add(PromoprodRewards.class);
         clazzList.add(HealthIslandRewards.class);
+        clazzList.add(YueYueZhuan.class);
         clazzList.add(AnswerAI.class);
 
         ExtensionsHandle.handleAlphaRequest("ModelOrder", "addExtensionsClass", clazzList);

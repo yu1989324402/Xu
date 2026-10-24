@@ -107,6 +107,11 @@ public class AntSports extends ModelTask {
     //private SelectModelField neverLandOptions;
     private ChoiceModelField energyStrategy;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "运动";
@@ -120,42 +125,42 @@ public class AntSports extends ModelTask {
     @Override
     public ModelFields getFields() {
         ModelFields modelFields = new ModelFields();
-        modelFields.addField(walk = new BooleanModelField("walk", "行走路线 | 开启", false));
+        modelFields.addField(walk = new BooleanModelField("walk", "行走路线 | 开启",true));
         // modelFields.addField(PathThemeMapList = new SelectModelField("PathThemeMapList", "行走路线 | 路线主题", new LinkedHashSet<>(), WalkPathThemeMapList::getList, "请选择要行走的主题，选择多条则随机走其中一个主题下的路线"));
         // 确保 nickNames 和 values 已初始化
         WalkPathThemeMapList.getList();
         modelFields.addField(PathThemeMapList = new ChoiceModelField("PathThemeMapList", "行走路线 | 路线主题", 0, WalkPathThemeMapList.nickNames).setDependsOn("walk"));
-        modelFields.addField(walkMinimumCompleteCount = new BooleanModelField("walkMinimumCompleteCount", "全主题路线(选最少完成数) | 开启", false).setDependsOn("walk"));
+        modelFields.addField(walkMinimumCompleteCount = new BooleanModelField("walkMinimumCompleteCount", "全主题路线(选最少完成数) | 开启",true).setDependsOn("walk"));
         modelFields.addField(walkPaceMs = new IntegerModelField("walkPaceMs", "行走路线 | 每步间隔(毫秒)", 50, 50, 2000)
                 .setDependsOn("walk")
                 .setDescription("每上报 1 步等待的毫秒数：默认 50ms≈20 步/秒（22000 步约 18 分钟），调大更保守；不限速的步频会被风控 1009 拦截，1009 后连只读查询都不可用"));
         //modelFields.addField(walkCustomPathIdList = new SelectModelField("walkCustomPathIdList", "行走路线 | 自定义路线列表", new LinkedHashSet<>(), WalkPath::getThemeListFromRpc, "请选择要行走的路线，选择多条则随机走其中一条"));
-        modelFields.addField(sportsTasks = new BooleanModelField("sportsTasks", "运动任务", false));
+        modelFields.addField(sportsTasks = new BooleanModelField("sportsTasks", "运动任务",true));
         modelFields.addField(AutoAntSportsTaskList = new BooleanModelField("AutoAntSportsTaskList", "运动任务 | 自动黑名单", true).setDependsOn("sportsTasks"));
         modelFields.addField(AntSportsTaskList = new SelectModelField("AntSportsTaskList", "运动任务 | 黑名单列表", new LinkedHashSet<>(), AlipayAntSportsTaskList::getList).setDependsOn("AutoAntSportsTaskList"));
-        modelFields.addField(receiveCoinAsset = new BooleanModelField("receiveCoinAsset", "收运动币", false));
+        modelFields.addField(receiveCoinAsset = new BooleanModelField("receiveCoinAsset", "收运动币",true));
         modelFields.addField(donateCharityCoinType = new ChoiceModelField("donateCharityCoinType", "捐运动币 | 方式", DonateCharityCoinType.ZERO, DonateCharityCoinType.nickNames));
         modelFields.addField(donateCharityCoinAmount = new IntegerModelField("donateCharityCoinAmount", "捐运动币 | 数量" + "(每次)", 100));
-        //modelFields.addField(coinExchangeDoubleCard = new BooleanModelField("coinExchangeDoubleCard", "运动币兑换限时能量双击卡", false));
-        modelFields.addField(club = new BooleanModelField("club", "抢好友 | 开启", false));
+        //modelFields.addField(coinExchangeDoubleCard = new BooleanModelField("coinExchangeDoubleCard", "运动币兑换限时能量双击卡",true));
+        modelFields.addField(club = new BooleanModelField("club", "抢好友 | 开启",true));
         modelFields.addField(clubTrainItemType = new ChoiceModelField("clubTrainItemType", "抢好友 | 训练动作", TrainItemType.NONE, TrainItemType.nickNames).setDependsOn("club"));
         modelFields.addField(clubTradeMemberType = new ChoiceModelField("clubTradeMemberType", "抢好友 | 抢购动作", TradeMemberType.NONE, TradeMemberType.nickNames).setDependsOn("club"));
         modelFields.addField(clubTradeMemberList = new SelectModelField("clubTradeMemberList", "抢好友 | 好友列表", new LinkedHashSet<>(), AlipayUser::getList).setDependsOn("club"));
-        modelFields.addField(tiyubiz = new BooleanModelField("tiyubiz", "文体中心", false));
+        modelFields.addField(tiyubiz = new BooleanModelField("tiyubiz", "文体中心",true));
         modelFields.addField(syncStepCount = new IntegerModelField("syncStepCount", "同步步数 | 自定义", 22000, 0, 78000));
         modelFields.addField(earliestSyncStepTime = new IntegerModelField("earliestSyncStepTime", "同步步数 | 最早同步时间(24小时制)", 0, 0, 23));
-        modelFields.addField(threeHourDonate = new BooleanModelField("threeHourDonate", "3小时公益捐步", false));
+        modelFields.addField(threeHourDonate = new BooleanModelField("threeHourDonate", "3小时公益捐步",true));
         modelFields.addField(latestExchangeTime = new IntegerModelField("latestExchangeTime", "行走捐 | 最晚捐步时间(24小时制)", 22));
         modelFields.addField(minExchangeCount = new IntegerModelField("minExchangeCount", "行走捐 | 最小捐步步数", 10));
-        modelFields.addField(neverLand = new BooleanModelField("neverLand", "健康岛 | 开启", false));
-        modelFields.addField(QUERY_SIGN = new BooleanModelField("QUERY_SIGN", "健康岛 | 每日签到", false).setDependsOn("neverLand"));
-        modelFields.addField(QUERY_TASK_CENTER = new BooleanModelField("QUERY_TASK_CENTER", "健康岛 | 做任务 加能量", false).setDependsOn("neverLand"));
-        modelFields.addField(QUERY_BUBBLE_TASK = new BooleanModelField("QUERY_BUBBLE_TASK", "健康岛 | 领取能量球奖励", false).setDependsOn("neverLand"));
-        modelFields.addField(WALK_GRID = new BooleanModelField("WALK_GRID", "健康岛 | 能量泵", false).setDependsOn("neverLand"));
+        modelFields.addField(neverLand = new BooleanModelField("neverLand", "健康岛 | 开启",true));
+        modelFields.addField(QUERY_SIGN = new BooleanModelField("QUERY_SIGN", "健康岛 | 每日签到",true).setDependsOn("neverLand"));
+        modelFields.addField(QUERY_TASK_CENTER = new BooleanModelField("QUERY_TASK_CENTER", "健康岛 | 做任务 加能量",true).setDependsOn("neverLand"));
+        modelFields.addField(QUERY_BUBBLE_TASK = new BooleanModelField("QUERY_BUBBLE_TASK", "健康岛 | 领取能量球奖励",true).setDependsOn("neverLand"));
+        modelFields.addField(WALK_GRID = new BooleanModelField("WALK_GRID", "健康岛 | 能量泵",true).setDependsOn("neverLand"));
         modelFields.addField(WALK_GRID_MAX = new IntegerModelField("WALK_GRID_MAX", "健康岛 | 单次执行能量泵最大次数(不限:0)", 5).setDependsOn("neverLand"));
         modelFields.addField(WALK_GRID_LIMIT = new IntegerModelField("WALK_GRID_LIMIT", "健康岛 | 使用能量泵剩余能量值(低于该值停止使用)", 10000).setDependsOn("neverLand"));
-        modelFields.addField(MapListSwitch = new BooleanModelField("MapListSwitch", "健康岛 | 自动切岛", false).setDependsOn("neverLand"));
-        modelFields.addField(awardspecialActivityReceive = new BooleanModelField("awardspecialActivityReceive", "健康岛 | 领取活动岛奖励", false).setDependsOn("neverLand"));
+        modelFields.addField(MapListSwitch = new BooleanModelField("MapListSwitch", "健康岛 | 自动切岛",true).setDependsOn("neverLand"));
+        modelFields.addField(awardspecialActivityReceive = new BooleanModelField("awardspecialActivityReceive", "健康岛 | 领取活动岛奖励",true).setDependsOn("neverLand"));
         return modelFields;
     }
 

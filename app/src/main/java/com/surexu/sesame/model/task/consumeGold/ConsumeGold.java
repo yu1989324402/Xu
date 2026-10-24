@@ -12,6 +12,11 @@ import com.surexu.sesame.util.Log;
 public class ConsumeGold extends ModelTask {
     private static final String TAG = ConsumeGold.class.getSimpleName();
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "消费金";
