@@ -52,9 +52,14 @@ public class BaseModel extends Model {
     @Getter
     private static final BooleanModelField newRpc = new BooleanModelField("newRpc", "使用新接口(最低支持v10.3.96.8100)", true);
     @Getter
-    private static final BooleanModelField debugMode = new BooleanModelField("debugMode", "开启抓包(基于新接口)", false);
+    private static final BooleanModelField debugMode = new BooleanModelField("debugMode", "开启抓包(基于新接口)",false);
     @Getter
     private static final SelectAndCountModelField rpcRequestList = new SelectAndCountModelField("rpcRequestList", "RPC请求列表及每日执行数(慎用)", new LinkedHashMap<>(), AlipayrpcRequest::getList, "请填写每日执行次数");
+    
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
     
     @Override
     public String getName() {

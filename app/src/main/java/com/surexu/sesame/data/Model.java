@@ -41,11 +41,20 @@ public abstract class Model {
     }
 
     public Model() {
-        this.enableField = new BooleanModelField("enable", getEnableFieldName(), false);
+        this.enableField = new BooleanModelField("enable", getEnableFieldName(), getDefaultEnable());
     }
 
     public String getEnableFieldName() {
         return "开启" + getName();
+    }
+
+    /**
+     * 该功能是否"出厂默认开启"。默认 false（模块一贯的全部默认关闭）；
+     * 希望重装后无需手动打开的功能，重写本方法返回 true 即可。
+     * 注意：构造期调用，实现里不要依赖子类尚未初始化的字段。
+     */
+    public Boolean getDefaultEnable() {
+        return false;
     }
 
     public final Boolean isEnable() {

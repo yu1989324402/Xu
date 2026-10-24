@@ -11,6 +11,11 @@ import org.json.JSONObject;
 public final class LuckCardStatus extends IsolatedRewardTask {
     private BooleanModelField inspect;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "好运卡任务状态";
@@ -18,7 +23,7 @@ public final class LuckCardStatus extends IsolatedRewardTask {
 
     @Override
     protected void addFields(ModelFields modelFields) {
-        BooleanModelField booleanModelField = new BooleanModelField("inspect", "查询任务状态", false);
+        BooleanModelField booleanModelField = new BooleanModelField("inspect", "查询任务状态",true);
         this.inspect = booleanModelField;
         modelFields.addField(booleanModelField);
     }

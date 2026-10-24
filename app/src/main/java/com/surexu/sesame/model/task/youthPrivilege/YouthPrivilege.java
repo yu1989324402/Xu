@@ -10,6 +10,11 @@ import org.json.JSONObject;
 public final class YouthPrivilege extends IsolatedRewardTask {
     private BooleanModelField checkIn;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "青春特权签到";
@@ -17,7 +22,7 @@ public final class YouthPrivilege extends IsolatedRewardTask {
 
     @Override
     protected void addFields(ModelFields modelFields) {
-        BooleanModelField booleanModelField = new BooleanModelField("checkIn", "领取签到奖励", false);
+        BooleanModelField booleanModelField = new BooleanModelField("checkIn", "领取签到奖励",true);
         this.checkIn = booleanModelField;
         modelFields.addField(booleanModelField);
     }

@@ -41,6 +41,11 @@ public class PlantingFlowers extends ModelTask {
     private StringModelField assistPushUrl;
     private StringModelField recordPushUrl;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return DISPLAY_NAME;
@@ -54,8 +59,8 @@ public class PlantingFlowers extends ModelTask {
     @Override
     public ModelFields getFields() {
         ModelFields modelFields = new ModelFields();
-        modelFields.addField(plantingFlowers = new BooleanModelField("plantingFlowers", "种花大作战 | 自动任务", false));
-        modelFields.addField(shareEnable = new BooleanModelField("shareEnable", "种花大作战 | 口令助力", false));
+        modelFields.addField(plantingFlowers = new BooleanModelField("plantingFlowers", "种花大作战 | 自动任务",true));
+        modelFields.addField(shareEnable = new BooleanModelField("shareEnable", "种花大作战 | 口令助力",true));
         modelFields.addField(manualToken = new StringModelField("plantingFlowersManualToken", "种花大作战 | 手动Token(可选)", ""));
         modelFields.addField(manualSecret = new StringModelField("plantingFlowersManualSecret", "种花大作战 | 手动助力口令(可选)", ""));
         modelFields.addField(assistListUrl = new StringModelField("plantingFlowersAssistListUrl", "种花大作战 | 口令池-取列表URL", ""));

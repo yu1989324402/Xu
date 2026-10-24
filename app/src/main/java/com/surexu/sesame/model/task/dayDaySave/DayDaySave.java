@@ -9,6 +9,11 @@ import org.json.JSONObject;
 public final class DayDaySave extends IsolatedRewardTask {
     private BooleanModelField checkIn;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "理财稳当当签到";
@@ -16,7 +21,7 @@ public final class DayDaySave extends IsolatedRewardTask {
 
     @Override
     protected void addFields(ModelFields modelFields) {
-        BooleanModelField booleanModelField = new BooleanModelField("checkIn", "每日签到", false);
+        BooleanModelField booleanModelField = new BooleanModelField("checkIn", "每日签到",true);
         this.checkIn = booleanModelField;
         modelFields.addField(booleanModelField);
     }

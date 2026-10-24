@@ -97,6 +97,11 @@ public class AntFarm extends ModelTask {
 
     private FarmTool[] farmTools;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "庄园";
@@ -167,18 +172,18 @@ public class AntFarm extends ModelTask {
     @Override
     public ModelFields getFields() {
         ModelFields modelFields = new ModelFields();
-        modelFields.addField(receiveFarmTaskAward = new BooleanModelField("receiveFarmTaskAward", "饲料任务及奖励", false));
+        modelFields.addField(receiveFarmTaskAward = new BooleanModelField("receiveFarmTaskAward", "饲料任务及奖励",true));
         modelFields.addField(AutoAntFarmDoFarmTaskList = new BooleanModelField("AutoAntFarmDoFarmTaskList", "庄园饲料 | 自动黑名单", true).setDependsOn("receiveFarmTaskAward"));
         modelFields.addField(AntFarmDoFarmTaskList = new SelectModelField("AntFarmDoFarmTaskList", "庄园饲料 | 黑名单列表", new LinkedHashSet<>(), AlipayAntFarmDoFarmTaskList::getList).setDependsOn("AutoAntFarmDoFarmTaskList"));
-        modelFields.addField(useNewEggTool = new BooleanModelField("useNewEggTool", "新蛋卡 | 使用", false));
-        modelFields.addField(useAccelerateTool = new BooleanModelField("useAccelerateTool", "加速卡 | 使用", false));
+        modelFields.addField(useNewEggTool = new BooleanModelField("useNewEggTool", "新蛋卡 | 使用",true));
+        modelFields.addField(useAccelerateTool = new BooleanModelField("useAccelerateTool", "加速卡 | 使用",true));
         modelFields.addField(useAccelerateToolOptions = new SelectModelField("useAccelerateToolOptions", "加速卡 | 选项", new LinkedHashSet<>(), CustomOption::getUseAccelerateToolOptions).setDependsOn("useAccelerateTool"));
-        modelFields.addField(useBigEaterTool = new BooleanModelField("useBigEaterTool", "加饭卡 | 使用", false));
-        modelFields.addField(useSpecialFood = new BooleanModelField("useSpecialFood", "特殊食品 | 使用", false));
+        modelFields.addField(useBigEaterTool = new BooleanModelField("useBigEaterTool", "加饭卡 | 使用",true));
+        modelFields.addField(useSpecialFood = new BooleanModelField("useSpecialFood", "特殊食品 | 使用",true));
         modelFields.addField(useSpecialFoodCountLimit = new IntegerModelField("useSpecialFoodCountLimit", "特殊食品 | " + "使用上限(无限:0)", 0).setDependsOn("useSpecialFood"));
-        modelFields.addField(rewardFriend = new BooleanModelField("rewardFriend", "打赏好友", false));
+        modelFields.addField(rewardFriend = new BooleanModelField("rewardFriend", "打赏好友",true));
         modelFields.addField(recallAnimalType = new ChoiceModelField("recallAnimalType", "召回小鸡", RecallAnimalType.ALWAYS, RecallAnimalType.nickNames));
-        modelFields.addField(feedAnimal = new BooleanModelField("feedAnimal", "投喂小鸡", false));
+        modelFields.addField(feedAnimal = new BooleanModelField("feedAnimal", "投喂小鸡",true));
         modelFields.addField(feedFriendAnimal = new BooleanModelField("feedFriendAnimal", "帮喂小鸡 | 开启", true));
         modelFields.addField(feedFriendAnimalList = new SelectAndCountModelField("feedFriendAnimalList", "帮喂小鸡 | " + "好友列表", new LinkedHashMap<>(), AlipayUser::getList, "请填写帮喂次数(每日)").setDependsOn("feedFriendAnimal"));
         modelFields.addField(hireAnimalType = new ChoiceModelField("hireAnimalType", "雇佣小鸡 | 动作", HireAnimalType.NONE, HireAnimalType.nickNames));
@@ -188,42 +193,42 @@ public class AntFarm extends ModelTask {
         modelFields.addField(sendBackAnimalList = new SelectModelField("sendFriendList", "遣返小鸡 | 好友列表", new LinkedHashSet<>(), AlipayUser::getList).setDependsOn("sendBackAnimalType"));
         modelFields.addField(notifyFriendType = new ChoiceModelField("notifyFriendType", "通知赶鸡 | 动作", NotifyFriendType.NONE, NotifyFriendType.nickNames));
         modelFields.addField(notifyFriendList = new SelectModelField("notifyFriendList", "通知赶鸡 | 好友列表", new LinkedHashSet<>(), AlipayUser::getList).setDependsOn("notifyFriendType"));
-        modelFields.addField(ornamentsDressUp = new BooleanModelField("ornamentsDressUp", "装扮焕新 | 开启", false));
+        modelFields.addField(ornamentsDressUp = new BooleanModelField("ornamentsDressUp", "装扮焕新 | 开启",true));
         modelFields.addField(ornamentsDressUpList = new SelectModelField("ornamentsDressUpList", "装扮焕新 | 套装列表", new LinkedHashSet<>(), FarmOrnaments::getList).setDependsOn("ornamentsDressUp"));
         modelFields.addField(ornamentsDressUpDays = new IntegerModelField("ornamentsDressUpDays", "装扮焕新 | 焕新频率(天)", 7, 1, 30).setDependsOn("ornamentsDressUp"));
-        modelFields.addField(drawMachine = new BooleanModelField("drawMachine", "装扮抽抽乐", false));
+        modelFields.addField(drawMachine = new BooleanModelField("drawMachine", "装扮抽抽乐",true));
         modelFields.addField(AutoAntFarmDrawMachineTaskList = new BooleanModelField("AutoAntFarmDrawMachineTaskList", "抽抽乐 | 自动黑名单", true).setDependsOn("drawMachine"));
         modelFields.addField(AntFarmDrawMachineTaskList = new SelectModelField("AntFarmDrawMachineTaskList", "抽抽乐 | 黑名单列表", new LinkedHashSet<>(), AlipayAntFarmDrawMachineTaskList::getList).setDependsOn("AutoAntFarmDrawMachineTaskList"));
-        modelFields.addField(IPexchangeBenefit = new BooleanModelField("IPexchangeBenefit", "抽抽乐兑换 | 开启", false));
+        modelFields.addField(IPexchangeBenefit = new BooleanModelField("IPexchangeBenefit", "抽抽乐兑换 | 开启",true));
         modelFields.addField(donationType = new ChoiceModelField("donationType", "每日捐蛋 | 方式", DonationType.ZERO, DonationType.nickNames));
         modelFields.addField(donationAmount = new IntegerModelField("donationAmount", "每日捐蛋 | 倍数(每项)", 1).setDependsOn("donationType"));
-        modelFields.addField(competition = new BooleanModelField("competition", "爱心鸡结号 | 开启", false));
-        modelFields.addField(competitionReceiveTask = new BooleanModelField("competitionReceiveTask", "爱心鸡结号 | 领取奖励", false).setDependsOn("competition"));
-        modelFields.addField(competitionDonate = new BooleanModelField("competitionDonate", "爱心鸡结号 | 自动捐蛋", false).setDependsOn("competition"));
+        modelFields.addField(competition = new BooleanModelField("competition", "爱心鸡结号 | 开启",true));
+        modelFields.addField(competitionReceiveTask = new BooleanModelField("competitionReceiveTask", "爱心鸡结号 | 领取奖励",true).setDependsOn("competition"));
+        modelFields.addField(competitionDonate = new BooleanModelField("competitionDonate", "爱心鸡结号 | 自动捐蛋",true).setDependsOn("competition"));
         modelFields.addField(competitionDonateAmount = new IntegerModelField("competitionDonateAmount", "爱心鸡结号 | 自动捐蛋数量", 5, 0, 1000).setDependsOn("competitionDonate"));
-        modelFields.addField(competitionStealRank = new BooleanModelField("competitionStealRank", "爱心鸡结号 | 偷榜", false).setDependsOn("competition"));
+        modelFields.addField(competitionStealRank = new BooleanModelField("competitionStealRank", "爱心鸡结号 | 偷榜",true).setDependsOn("competition"));
         modelFields.addField(competitionStealMinutes = new IntegerModelField("competitionStealMinutes", "爱心鸡结号 | 偷榜提前分钟数", 30, 0, 240).setDependsOn("competitionStealRank"));
         modelFields.addField(competitionStealLimit = new IntegerModelField("competitionStealLimit", "爱心鸡结号 | 偷榜捐献上限(0不限)", 0, 0, 1000).setDependsOn("competitionStealRank"));
-        modelFields.addField(family = new BooleanModelField("family", "亲密家庭 | 开启", false));
+        modelFields.addField(family = new BooleanModelField("family", "亲密家庭 | 开启",true));
         modelFields.addField(familyOptions = new SelectModelField("familyOptions", "亲密家庭 | 选项", new LinkedHashSet<>(), CustomOption::getAntFarmFamilyOptions).setDependsOn("family"));
         modelFields.addField(notInviteList = new SelectModelField("notInviteList", "亲密家庭 | 不邀请列表", new LinkedHashSet<>(), AlipayUser::getList).setDependsOn("family"));
-        modelFields.addField(enableSleep = new BooleanModelField("enableSleep", "小鸡睡觉 | 允许睡觉", false));
+        modelFields.addField(enableSleep = new BooleanModelField("enableSleep", "小鸡睡觉 | 允许睡觉",true));
         modelFields.addField(sleepTime = new StringModelField("sleepTime", "小鸡睡觉 | 时间", "2001").setDependsOn("enableSleep"));
         modelFields.addField(sleepMinutes = new IntegerModelField("sleepMinutes", "小鸡睡觉 | 时长(分钟)", 10 * 59, 1, 10 * 60).setDependsOn("enableSleep"));
-        modelFields.addField(recordFarmGame = new BooleanModelField("recordFarmGame", "小鸡乐园 | 游戏改分(星星球、登山赛、飞行赛、揍小鸡)", false));
+        modelFields.addField(recordFarmGame = new BooleanModelField("recordFarmGame", "小鸡乐园 | 游戏改分(星星球、登山赛、飞行赛、揍小鸡)",true));
         List<String> farmGameTimeList = new ArrayList<>();
         farmGameTimeList.add("2200-2400");
         modelFields.addField(farmGameTime = new ListModelField.ListJoinCommaToStringModelField("farmGameTime", "小鸡乐园 " + "| 游戏时间(范围)", farmGameTimeList).setDependsOn("recordFarmGame"));
-        modelFields.addField(drawGameCenterAward = new BooleanModelField("drawGameCenterAward", "小鸡乐园 | 游戏宝箱", false));
-        modelFields.addField(gameCenterBuyMallItem = new BooleanModelField("gameCenterBuyMallItem", "小鸡乐园 | 乐园集市", false));
+        modelFields.addField(drawGameCenterAward = new BooleanModelField("drawGameCenterAward", "小鸡乐园 | 游戏宝箱",true));
+        modelFields.addField(gameCenterBuyMallItem = new BooleanModelField("gameCenterBuyMallItem", "小鸡乐园 | 乐园集市",true));
         modelFields.addField(gameCenterBuyMallItemList = new SelectAndCountModelField("gameCenterBuyMallItemList", "小鸡乐园 | 兑奖", new LinkedHashMap<>(), GameCenterMallItem::getList, "请填写兑奖次数(每日)").setDependsOn("gameCenterBuyMallItem"));
-        modelFields.addField(kitchen = new BooleanModelField("kitchen", "小鸡厨房", false));
-        modelFields.addField(chickenDiary = new BooleanModelField("chickenDiary", "小鸡日记", false));
-        modelFields.addField(harvestProduce = new BooleanModelField("harvestProduce", "收取爱心鸡蛋", false));
-        modelFields.addField(receiveFarmToolReward = new BooleanModelField("receiveFarmToolReward", "收取道具奖励", false));
+        modelFields.addField(kitchen = new BooleanModelField("kitchen", "小鸡厨房",true));
+        modelFields.addField(chickenDiary = new BooleanModelField("chickenDiary", "小鸡日记",true));
+        modelFields.addField(harvestProduce = new BooleanModelField("harvestProduce", "收取爱心鸡蛋",true));
+        modelFields.addField(receiveFarmToolReward = new BooleanModelField("receiveFarmToolReward", "收取道具奖励",true));
         modelFields.addField(getFeedType = new ChoiceModelField("getFeedType", "一起拿饲料 | 动作", GetFeedType.NONE, GetFeedType.nickNames));
         modelFields.addField(getFeedList = new SelectModelField("getFeedList", "一起拿饲料 | 好友列表", new LinkedHashSet<>(), AlipayUser::getList));
-        modelFields.addField(acceptGift = new BooleanModelField("acceptGift", "收麦子", false));
+        modelFields.addField(acceptGift = new BooleanModelField("acceptGift", "收麦子",true));
         modelFields.addField(visitFriendList = new SelectAndCountModelField("visitFriendList", "送麦子 | 好友列表", new LinkedHashMap<>(), AlipayUser::getList, "请填写赠送次数(每日)"));
         return modelFields;
     }

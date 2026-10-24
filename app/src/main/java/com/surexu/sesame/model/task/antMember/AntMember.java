@@ -56,6 +56,11 @@ public class AntMember extends ModelTask {
     /** 游戏中心宝箱每日上限（首页 {@code taskModule.dailyTaskCertCntUpperLimit} 的兜底值）。 */
     private static final int GAME_CENTER_CERT_LIMIT = 30;
     
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+    
     @Override
     public String getName() {
         return "会员";
@@ -121,37 +126,37 @@ public class AntMember extends ModelTask {
     @Override
     public ModelFields getFields() {
         ModelFields modelFields = new ModelFields();
-        modelFields.addField(AntMemberTask = new BooleanModelField("AntMemberTask", "会员任务", false));
+        modelFields.addField(AntMemberTask = new BooleanModelField("AntMemberTask", "会员任务",true));
         modelFields.addField(AutoAntMemberTaskList = new BooleanModelField("AutoAntMemberTaskList", "会员任务 | 自动黑名单", true).setDependsOn("AntMemberTask"));
         modelFields.addField(AntMemberTaskList = new SelectModelField("AntMemberTaskList", "会员任务 | 黑名单列表", new LinkedHashSet<>(), AlipayAntMemberTaskList::getList).setDependsOn("AutoAntMemberTaskList"));
-        modelFields.addField(memberSign = new BooleanModelField("memberSign", "会员签到", false));
+        modelFields.addField(memberSign = new BooleanModelField("memberSign", "会员签到",true));
         modelFields.addField(memberPointExchangeBenefit = new BooleanModelField("memberPointExchangeBenefit", "会员积分 | 兑换权益", false));
         modelFields.addField(memberPointExchangeBenefitList = new SelectModelField("memberPointExchangeBenefitList", "会员积分 | 权益列表", new LinkedHashSet<>(), MemberBenefit::getList).setDependsOn("memberPointExchangeBenefit"));
         modelFields.addField(memberPointExchangeSecKill = new BooleanModelField("memberPointExchangeSecKill", "会员积分 | 整点秒杀", false));
         modelFields.addField(memberPointExchangeSecKillTimes = new StringModelField("memberPointExchangeSecKillTimes", "会员积分 | 秒杀时间点", "10:00,20:00").setDependsOn("memberPointExchangeSecKill"));
         modelFields.addField(memberPointExchangeCustom = new StringModelField("memberPointExchangeCustom", "会员积分 | 额外兑换(名称)", ""));
-        modelFields.addField(collectSesame = new BooleanModelField("collectSesame", "芝麻粒 | 领取", false));
+        modelFields.addField(collectSesame = new BooleanModelField("collectSesame", "芝麻粒 | 领取",true));
         modelFields.addField(AutoMemberCreditSesameTaskList = new BooleanModelField("AutoMemberCreditSesameTaskList", "芝麻粒任务 | 自动黑名单", true).setDependsOn("collectSesame"));
         modelFields.addField(MemberCreditSesameTaskList = new SelectModelField("MemberCreditSesameTaskList", "芝麻粒任务 | 黑名单列表", new LinkedHashSet<>(), AlipayMemberCreditSesameTaskList::getList).setDependsOn("AutoMemberCreditSesameTaskList"));
-        modelFields.addField(SesameGrowthBehavior = new BooleanModelField("SesameGrowthBehavior", "攒芝麻分进度", false));
-        modelFields.addField(enableGameCenter = new BooleanModelField("enableGameCenter", "游戏中心 | 得乐园豆", false));
-        modelFields.addField(promise = new BooleanModelField("promise", "生活记录 | 坚持做", false));
+        modelFields.addField(SesameGrowthBehavior = new BooleanModelField("SesameGrowthBehavior", "攒芝麻分进度",true));
+        modelFields.addField(enableGameCenter = new BooleanModelField("enableGameCenter", "游戏中心 | 得乐园豆",true));
+        modelFields.addField(promise = new BooleanModelField("promise", "生活记录 | 坚持做",true));
         modelFields.addField(promiseList = new SelectModelField("promiseList", "生活记录 | 坚持做列表", new LinkedHashSet<>(), PromiseSimpleTemplate::getList));
-        modelFields.addField(KuaiDiFuLiJia = new BooleanModelField("KuaiDiFuLiJia", "我的快递 | 福利加", false));
-        modelFields.addField(enableGoldTicketTask = new BooleanModelField("enableGoldTicketTask", "黄金票 | 开启", false));
-        modelFields.addField(enableGoldTicketSign = new BooleanModelField("enableGoldTicketSign", "黄金票 | 签到", false).setDependsOn("enableGoldTicketTask"));
-        modelFields.addField(enableGoldTicketConsume = new BooleanModelField("enableGoldTicketConsume", "黄金票 | 提取", false).setDependsOn("enableGoldTicketTask"));
-        modelFields.addField(enableGoldTicketBrowse = new BooleanModelField("enableGoldTicketBrowse", "黄金票 | 任务", false).setDependsOn("enableGoldTicketTask"));
+        modelFields.addField(KuaiDiFuLiJia = new BooleanModelField("KuaiDiFuLiJia", "我的快递 | 福利加",true));
+        modelFields.addField(enableGoldTicketTask = new BooleanModelField("enableGoldTicketTask", "黄金票 | 开启",true));
+        modelFields.addField(enableGoldTicketSign = new BooleanModelField("enableGoldTicketSign", "黄金票 | 签到",true).setDependsOn("enableGoldTicketTask"));
+        modelFields.addField(enableGoldTicketConsume = new BooleanModelField("enableGoldTicketConsume", "黄金票 | 提取",true).setDependsOn("enableGoldTicketTask"));
+        modelFields.addField(enableGoldTicketBrowse = new BooleanModelField("enableGoldTicketBrowse", "黄金票 | 任务",true).setDependsOn("enableGoldTicketTask"));
         modelFields.addField(AutoGoldTicketTaskList = new BooleanModelField("AutoGoldTicketTaskList", "黄金票任务 | 自动黑名单", true).setDependsOn("enableGoldTicketBrowse"));
         modelFields.addField(GoldTicketTaskList = new SelectModelField("GoldTicketTaskList", "黄金票任务 | 黑名单列表", new LinkedHashSet<>(), AlipayGoldTicketTaskList::getList).setDependsOn("AutoGoldTicketTaskList"));
-        modelFields.addField(merchantSignIn = new BooleanModelField("merchantSignIn", "商家服务 | 签到", false));
-        modelFields.addField(merchantKMDK = new BooleanModelField("merchantKMDK", "商家服务 | 开门打卡", false));
-        modelFields.addField(alchemyTask = new BooleanModelField("alchemyTask", "芝麻炼金", false));
-        modelFields.addField(insBeanSignIn = new BooleanModelField("insBeanSignIn", "蚂蚁保障 | 安心豆签到", false));
-        modelFields.addField(insBeanExchangeBubbleBoost = new BooleanModelField("insBeanExchangeBubbleBoost", "蚂蚁保障 | 安心豆兑换时光加速器", false));
-        modelFields.addField(insBeanExchangeGoldenTicket = new BooleanModelField("insBeanExchangeGoldenTicket", "蚂蚁保障 | 安心豆兑换黄金票", false));
-        modelFields.addField(insGainSumInsured = new BooleanModelField("insGainSumInsured", "蚂蚁保障 | 保障金领取", false));
-        modelFields.addField(welfareFund = new BooleanModelField("welfareFund", "福利金 | 开启", false));
+        modelFields.addField(merchantSignIn = new BooleanModelField("merchantSignIn", "商家服务 | 签到",true));
+        modelFields.addField(merchantKMDK = new BooleanModelField("merchantKMDK", "商家服务 | 开门打卡",true));
+        modelFields.addField(alchemyTask = new BooleanModelField("alchemyTask", "芝麻炼金",true));
+        modelFields.addField(insBeanSignIn = new BooleanModelField("insBeanSignIn", "蚂蚁保障 | 安心豆签到",true));
+        modelFields.addField(insBeanExchangeBubbleBoost = new BooleanModelField("insBeanExchangeBubbleBoost", "蚂蚁保障 | 安心豆兑换时光加速器",true));
+        modelFields.addField(insBeanExchangeGoldenTicket = new BooleanModelField("insBeanExchangeGoldenTicket", "蚂蚁保障 | 安心豆兑换黄金票",true));
+        modelFields.addField(insGainSumInsured = new BooleanModelField("insGainSumInsured", "蚂蚁保障 | 保障金领取",true));
+        modelFields.addField(welfareFund = new BooleanModelField("welfareFund", "福利金 | 开启",true));
         modelFields.addField(welfareFundSign = new BooleanModelField("welfareFundSign", "福利金 | 签到", true).setDependsOn("welfareFund"));
         modelFields.addField(welfareFundTask = new BooleanModelField("welfareFundTask", "福利金 | 任务", true).setDependsOn("welfareFund"));
         modelFields.addField(AutoWelfareFundTaskList = new BooleanModelField("AutoWelfareFundTaskList", "福利金任务 | 自动黑名单", true).setDependsOn("welfareFundTask"));

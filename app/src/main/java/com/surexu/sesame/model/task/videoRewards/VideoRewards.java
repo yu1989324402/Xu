@@ -20,6 +20,11 @@ public final class VideoRewards extends ModelTask {
     private IntegerModelField minimumPlaybackSeconds;
     private BooleanModelField reserve;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "视频红包钱包查询";
@@ -39,7 +44,7 @@ public final class VideoRewards extends ModelTask {
         IntegerModelField integerModelField2 = new IntegerModelField("minimumPlaybackSeconds", "最小真实播放时长(秒)", 15, 1, 3600);
         this.minimumPlaybackSeconds = integerModelField2;
         modelFields.addField(integerModelField2);
-        BooleanModelField booleanModelField = new BooleanModelField("reserve", "预约可用视频任务", false);
+        BooleanModelField booleanModelField = new BooleanModelField("reserve", "预约可用视频任务",true);
         this.reserve = booleanModelField;
         modelFields.addField(booleanModelField);
         return modelFields;

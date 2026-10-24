@@ -109,6 +109,11 @@ public class AntOrchard extends ModelTask {
     private static boolean spreadUseBatchThisTime = false;
     private static final ArrayList<String> enableSceneList = new ArrayList<>();
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return NAME;
@@ -123,10 +128,10 @@ public class AntOrchard extends ModelTask {
     public ModelFields getFields() {
         ModelFields modelFields = new ModelFields();
         modelFields.addField(executeInterval = new IntegerModelField("executeInterval", "执行间隔(毫秒)", 500, 500, null));
-        modelFields.addField(orchardListTask = new BooleanModelField("orchardListTask", "农场任务", false));
+        modelFields.addField(orchardListTask = new BooleanModelField("orchardListTask", "农场任务",true));
         modelFields.addField(AutoAntOrchardTaskList = new BooleanModelField("AutoAntOrchardTaskList", "农场任务 | 自动黑名单", true).setDependsOn("orchardListTask"));
         modelFields.addField(AntOrchardTaskList = new SelectModelField("AntOrchardTaskList", "农场任务 | 黑名单列表", new LinkedHashSet<>(), AlipayAntOrchardTaskList::getList).setDependsOn("AutoAntOrchardTaskList"));
-        modelFields.addField(orchardSpreadManure = new BooleanModelField("orchardSpreadManure", "农场施肥 | 开启", false));
+        modelFields.addField(orchardSpreadManure = new BooleanModelField("orchardSpreadManure", "农场施肥 | 开启",true));
         modelFields.addField(useBatchSpread = new BooleanModelField("useBatchSpread", "一键施肥5次(边界突破)", false)
                 .setDependsOn("orchardSpreadManure")
                 .setDescription("仅当每日次数设为200时启用：前4次按单次、之后持续一键5次，计数序列4,9,…,199,204命中199+5漏洞到204；其他数值精确施肥不批量（肥料不足5倍时退回单次）"));
@@ -137,11 +142,11 @@ public class AntOrchard extends ModelTask {
                 .setDependsOn("orchardSpreadManure")
                 .setDescription("按轮计：设为200并开一键施肥5次时突破到204；设为其他数值则设置多少施肥多少（不批量）"));
         modelFields.addField(drawGameCenterAward = new BooleanModelField("drawGameCenterAward", "农场乐园 | 游戏宝箱", true));
-        modelFields.addField(receiveOrchardGameStay = new BooleanModelField("receiveOrchardGameStay", "游戏时长任务 | 开启", false));
-        modelFields.addField(orchardChouChouLe = new BooleanModelField("orchardChouChouLe", "抽抽乐(阿肥寻宝记)", false));
+        modelFields.addField(receiveOrchardGameStay = new BooleanModelField("receiveOrchardGameStay", "游戏时长任务 | 开启",true));
+        modelFields.addField(orchardChouChouLe = new BooleanModelField("orchardChouChouLe", "抽抽乐(阿肥寻宝记)",true));
         modelFields.addField(AutoOrchardChouChouLeTaskList = new BooleanModelField("AutoOrchardChouChouLeTaskList", "抽抽乐任务 | 自动黑名单", true).setDependsOn("orchardChouChouLe"));
         modelFields.addField(OrchardChouChouLeTaskList = new SelectModelField("OrchardChouChouLeTaskList", "抽抽乐任务 | 黑名单列表", new LinkedHashSet<>(), AlipayOrchardChouChouLeTaskList::getList).setDependsOn("AutoOrchardChouChouLeTaskList"));
-        modelFields.addField(assistFriend = new BooleanModelField("assistFriend", "分享助力 | 开启", false));
+        modelFields.addField(assistFriend = new BooleanModelField("assistFriend", "分享助力 | 开启",true));
         modelFields.addField(assistFriendList = new SelectModelField("assistFriendList", "分享助力 | 好友列表", new LinkedHashSet<>(), AlipayUser::getList).setDependsOn("assistFriend"));
         return modelFields;
     }

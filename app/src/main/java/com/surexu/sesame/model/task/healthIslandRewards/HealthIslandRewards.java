@@ -15,6 +15,11 @@ public final class HealthIslandRewards extends IsolatedRewardTask {
     private IntegerModelField maxPieces;
     private StringModelField prizeId;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return "健康岛红包碎片兑换";
@@ -22,7 +27,7 @@ public final class HealthIslandRewards extends IsolatedRewardTask {
 
     @Override
     protected void addFields(ModelFields modelFields) {
-        BooleanModelField booleanModelField = new BooleanModelField("exchange", "兑换即将到期的碎片", false);
+        BooleanModelField booleanModelField = new BooleanModelField("exchange", "兑换即将到期的碎片",true);
         this.exchange = booleanModelField;
         modelFields.addField(booleanModelField);
         StringModelField stringModelField = new StringModelField("prizeId", "指定兑换礼品ID", "");

@@ -82,6 +82,11 @@ public final class YueYueZhuan extends IsolatedRewardTask {
     private BooleanModelField resetBlackListDaily;
     private BooleanModelField simulateBrowse;
 
+    public Boolean getDefaultEnable() {
+        return true;
+    }
+
+
     @Override
     public String getName() {
         return TAG;
