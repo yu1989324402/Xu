@@ -134,7 +134,9 @@ public abstract class IsolatedRewardTask extends ModelTask {
             if (!allowed.isAllowed()) {
                 throw new Stopped();
             }
-            if (this.requests >= 6) {
+            // 月月赚等任务需要在一轮内完成多个浏览任务（每个占 2 次 RPC），
+            // 故放宽硬上限；各子类仍有自身 budget 约束，不会无限循环。
+            if (this.requests >= 40) {
                 throw new Stopped();
             }
             if (this.lastCallNanos != 0) {
